@@ -4,6 +4,10 @@
              xmlns:local="clr-namespace:DiplomskiRad"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+         <ResourceDictionary>
+            <SolidColorBrush x:Key="BoardOutLine" Color="#423936"/>
+            <SolidColorBrush x:Key="OddTile" Color="AliceBlue"/>
+            <SolidColorBrush x:Key="EvenTile" Color="Black"/>
+         </ResourceDictionary>
     </Application.Resources>
 </Application>
