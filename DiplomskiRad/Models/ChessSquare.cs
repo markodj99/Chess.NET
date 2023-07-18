@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DiplomskiRad.Models
+﻿namespace DiplomskiRad.Models
 {
     public class ChessSquare
     {
@@ -12,5 +6,6 @@ namespace DiplomskiRad.Models
         public int Column { get; set; }
         public string Color { get; set; }
         public Piece Piece { get; set; }
+        public string ImagePath { get; set; }
     }
 }
