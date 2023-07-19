@@ -1,16 +1,20 @@
-﻿using DiplomskiRad.Commands;
+﻿using System;
+using DiplomskiRad.Commands;
 using DiplomskiRad.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Windows;
+using System.Linq;
 using System.Windows.Input;
+using DiplomskiRad.Helper;
 
 namespace DiplomskiRad.ViewModels
 {
     public class ChessBoardViewModel : INotifyPropertyChanged
     {
+        #region BooardSetUp
+
         public ObservableCollection<ChessSquare> ChessSquares { get; set; }
 
         private readonly string[,] _initialPieceOrder = new string[,]
@@ -30,6 +34,7 @@ namespace DiplomskiRad.ViewModels
             ChessSquares = SetUpBoard();
             AvailableMoves = new ObservableCollection<ChessSquare>();
 
+            ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
         }
 
@@ -47,7 +52,7 @@ namespace DiplomskiRad.ViewModels
                     {
                         Row = row,
                         Column = column,
-                        Color = (row + column) % 2 == 0 ? "White" : "Black"
+                        Color = (row + column) % 2 == 0 ? "#CCCCCC" : "#3a9cce" // oke boje za sad
                     };
 
                     var c = row is not (0 or 1) ? "W" : "B";
@@ -78,10 +83,12 @@ namespace DiplomskiRad.ViewModels
             return chessSquares;
         }
 
-        public ICommand MoveCommand { get; private set; }
+        #endregion
 
+        public ICommand ClickCommand { get; private set; }
+        public ICommand MoveCommand { get; private set; }
         private ChessSquare _selectedSquare;
-        public ChessSquare SelectedSquare
+        public ChessSquare? SelectedSquare
         {
             get => _selectedSquare; 
             set
@@ -91,31 +98,41 @@ namespace DiplomskiRad.ViewModels
                 UpdateAvailableMoves();
             }
         }
-
         public ObservableCollection<ChessSquare> AvailableMoves { get; private set; }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        private bool CanExecuteClickCommand(object parameter)
+        {
+            var selectedSquare = parameter as ChessSquare;
+            if (selectedSquare?.ImagePath == null) return false;
+            return SelectedSquare is null || SelectedSquare.Equals(selectedSquare);
+        }
 
-
-        private bool CanExecuteMoveCommand(object parameter)
+        private void ExecuteClickCommand(object parameter)
         {
             var selectedSquare = parameter as ChessSquare;
 
-            if (selectedSquare?.ImagePath == null)
+            if (SelectedSquare is null) // nista nije izabrano
             {
-                MessageBox.Show("Ne moze");
-                return false;
+                SelectedSquare = new ChessSquare(selectedSquare);
+                ChessSquares.First(x => x.Row == SelectedSquare.Row && x.Column == SelectedSquare.Column).Color = "Black";
+                //ChessSquares.First(x => x is { Row: 2, Column: 0 }).ImagePath = ChessSquares.First(x => x is { Row: 0, Column: 0 }).ImagePath; test samo
             }
-            else
+            else if (SelectedSquare.Equals(selectedSquare)) // ista izabrana 2 puta
             {
-                MessageBox.Show("moze");
-                return true;
+                var color = (SelectedSquare.Row + SelectedSquare.Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                ChessSquares.First(x => x.Row == SelectedSquare.Row && x.Column == SelectedSquare.Column).Color = color;
+                SelectedSquare = null;
             }
+        }
+
+        private bool CanExecuteMoveCommand(object parameter)
+        {
+            return false;
         }
 
         private void ExecuteMoveCommand(object parameter)
         {
-            MessageBox.Show("moze");
+
         }
 
         private void UpdateAvailableMoves()
@@ -131,12 +148,58 @@ namespace DiplomskiRad.ViewModels
         {
             var retVal = new List<ChessSquare>();
 
+            switch (chessSquare.Piece.Name)
+            {
+                case "King":
+                    break;
+                case "Queen":
+                    break;
+                case "Rook":
+                    break;
+                case "Bishop":
+                    break;
+                case "Knight":
+                    break;
+                case "Pawn":
+                    HighlightPawnMoves(chessSquare, retVal);
+                    break;
+            }
+
             return retVal;
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+
+        private void HighlightPawnMoves(ChessSquare chessSquare, List<ChessSquare> retVal)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var pos = Mapping.DoubleIndexToCoordinate[new KeyValuePair<int, int>(chessSquare.Row, chessSquare.Column)];
+            int file = Convert.ToInt32(pos.Substring(1));
+            //dodaj ono sto si zamislio can move zbog saha da li je vezan i ta sranja da li moze da uzme figuru i na kraju promocija bla bla
+
+            if (chessSquare.Color.Equals("White"))
+            {
+                if (((Pawn)(chessSquare.Piece)).IsFirstMove)
+                {
+                    string firstSquare = $"{pos[0]}{file + 1}", secondSquare = $"{pos[0]}{file + 2}";
+                }
+                else
+                {
+                    string firstSquare = $"{pos[0]}{file + 1}";
+                }
+            }
+            else
+            {
+                if (((Pawn)(chessSquare.Piece)).IsFirstMove)
+                {
+                    string firstSquare = $"{pos[0]}{file - 1}", secondSquare = $"{pos[0]}{file - 2}";
+                }
+                else
+                {
+
+                }
+            }
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

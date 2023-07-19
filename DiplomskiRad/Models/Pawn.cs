@@ -2,6 +2,7 @@
 {
     public class Pawn : Piece
     {
-        public Pawn(string color) : base("Pawn", 1, color) { }
+        public bool IsFirstMove {get; set; }
+        public Pawn(string color) : base("Pawn", 1, color) => IsFirstMove = true;
     }
 }
