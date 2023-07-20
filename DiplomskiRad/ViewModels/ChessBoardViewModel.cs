@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -96,6 +97,8 @@ namespace DiplomskiRad.ViewModels
                 }
             }
 
+            #region Test
+
             //test
             //chessSquares[35] = new ChessSquare
             //{
@@ -128,16 +131,16 @@ namespace DiplomskiRad.ViewModels
                 Row = 3,
                 Column = 3,
                 Color = "#CCCCCC",
-                Piece = new Knight(Color.Black, 3, 3),
-                ImagePath = Path.Combine(targetFolder, "Knight_B.png")
+                Piece = new Bishop(Color.Black, 3, 3),
+                ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
             };
             chessSquares[36] = new ChessSquare
             {
                 Row = 4,
                 Column = 4,
                 Color = "#CCCCCC",
-                Piece = new Knight(Color.Black, 4, 4),
-                ImagePath = Path.Combine(targetFolder, "Knight_B.png")
+                Piece = new Bishop(Color.Black, 4, 4),
+                ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
             };
 
             chessSquares[28] = new ChessSquare
@@ -145,17 +148,19 @@ namespace DiplomskiRad.ViewModels
                 Row = 3,
                 Column = 4,
                 Color = "#3a9cce",
-                Piece = new Knight(Color.White, 3, 4),
-                ImagePath = Path.Combine(targetFolder, "Knight_W.png")
+                Piece = new Bishop(Color.White, 3, 4),
+                ImagePath = Path.Combine(targetFolder, "Bishop_W.png")
             };
             chessSquares[35] = new ChessSquare
             {
                 Row = 4,
                 Column = 3,
                 Color = "#3a9cce",
-                Piece = new Knight(Color.White, 4, 3),
-                ImagePath = Path.Combine(targetFolder, "Knight_W.png")
+                Piece = new Bishop(Color.White, 4, 3),
+                ImagePath = Path.Combine(targetFolder, "Bishop_W.png")
             };
+
+            #endregion
 
             return chessSquares;
         }
@@ -236,10 +241,9 @@ namespace DiplomskiRad.ViewModels
                 case PieceType.Rook:
                     break;
                 case PieceType.Bishop:
-                    break;
+                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
                 case PieceType.Knight:
                     return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
-                    break;
                 case PieceType.Pawn:
                     return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
             }
