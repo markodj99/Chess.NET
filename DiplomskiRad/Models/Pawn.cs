@@ -15,26 +15,26 @@ namespace DiplomskiRad.Models
         {
             var moves = new List<ushort>(4);
 
-            var possibleAdvances = GetPossibleAdvances();
+            var allPossibleAdvances = GetAllPossibleAdvances();
 
-            if (possibleAdvances.Count == 2)
+            if (allPossibleAdvances.Count == 2)
             {
-                if (board[possibleAdvances[0]].Piece == null)
+                if (board[allPossibleAdvances[0]].Piece == null)
                 {
-                    moves.Add(possibleAdvances[0]);
-                    if (board[possibleAdvances[1]].Piece == null) moves.Add(possibleAdvances[1]);
+                    moves.Add(allPossibleAdvances[0]);
+                    if (board[allPossibleAdvances[1]].Piece == null) moves.Add(allPossibleAdvances[1]);
                 }
             }
-            else if (board[possibleAdvances[0]].Piece == null) moves.Add(possibleAdvances[0]);
+            else if (board[allPossibleAdvances[0]].Piece == null) moves.Add(allPossibleAdvances[0]);
 
-            moves.AddRange(GetPossibleCaptures().Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
+            moves.AddRange(GetAllPossibleCaptures().Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
 
             // kasnije uradi za en passant i proveru za sah al ima do toga vremena
 
             return moves;
         }
 
-        private List<ushort> GetPossibleAdvances()
+        private List<ushort> GetAllPossibleAdvances()
         {
             var retValCoord = new List<string>(2);
             int rowOffset = (Color == Color.White) ? -1 : 1;
@@ -48,7 +48,7 @@ namespace DiplomskiRad.Models
             return retValIndex;
         }
 
-        private List<ushort> GetPossibleCaptures()
+        private List<ushort> GetAllPossibleCaptures()
         {
             var retValCoord = new List<string>(2);
             int rowOffset = (Color == Color.White) ? -1 : 1;

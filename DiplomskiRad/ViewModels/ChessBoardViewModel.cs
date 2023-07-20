@@ -96,15 +96,66 @@ namespace DiplomskiRad.ViewModels
                 }
             }
 
-            chessSquares[19] = new ChessSquare
+            //test
+            //chessSquares[35] = new ChessSquare
+            //{
+            //    Row = 4,
+            //    Column = 3,
+            //    Color = "#3a9cce",
+            //    Piece = new Pawn(Color.White, 4, 3),
+            //    ImagePath = Path.Combine(targetFolder, "Pawn_W.png")
+            //};
+            //((Pawn)chessSquares[35].Piece).IsFirstMove = false;
+            //chessSquares[36] = new ChessSquare
+            //{
+            //    Row = 4,
+            //    Column = 4,
+            //    Color = "#CCCCCC",
+            //    Piece = new Pawn(Color.Black, 4, 4),
+            //    ImagePath = Path.Combine(targetFolder, "Pawn_B.png")
+            //};
+            //((Pawn)chessSquares[36].Piece).IsFirstMove = false;
+            //chessSquares[43] = new ChessSquare
+            //{
+            //    Row = 5,
+            //    Column = 3,
+            //    Color = "#3a9cce",
+            //    Piece = new Queen(Color.White, 2, 3),
+            //    ImagePath = Path.Combine(targetFolder, "Queen_W.png")
+            //};
+            chessSquares[27] = new ChessSquare
             {
-                Row = 2,
+                Row = 3,
+                Column = 3,
+                Color = "#CCCCCC",
+                Piece = new Knight(Color.Black, 3, 3),
+                ImagePath = Path.Combine(targetFolder, "Knight_B.png")
+            };
+            chessSquares[36] = new ChessSquare
+            {
+                Row = 4,
+                Column = 4,
+                Color = "#CCCCCC",
+                Piece = new Knight(Color.Black, 4, 4),
+                ImagePath = Path.Combine(targetFolder, "Knight_B.png")
+            };
+
+            chessSquares[28] = new ChessSquare
+            {
+                Row = 3,
+                Column = 4,
+                Color = "#3a9cce",
+                Piece = new Knight(Color.White, 3, 4),
+                ImagePath = Path.Combine(targetFolder, "Knight_W.png")
+            };
+            chessSquares[35] = new ChessSquare
+            {
+                Row = 4,
                 Column = 3,
                 Color = "#3a9cce",
-                Piece = new Queen(Color.White, 2, 3),
-                ImagePath = Path.Combine(targetFolder, "Queen_W.png")
-        };
-
+                Piece = new Knight(Color.White, 4, 3),
+                ImagePath = Path.Combine(targetFolder, "Knight_W.png")
+            };
 
             return chessSquares;
         }
@@ -187,6 +238,7 @@ namespace DiplomskiRad.ViewModels
                 case PieceType.Bishop:
                     break;
                 case PieceType.Knight:
+                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
                     break;
                 case PieceType.Pawn:
                     return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
