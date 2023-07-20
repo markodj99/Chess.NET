@@ -1,13 +1,14 @@
-﻿using System;
-using DiplomskiRad.Commands;
+﻿using DiplomskiRad.Commands;
 using DiplomskiRad.Models;
+using DiplomskiRad.Models.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
-using DiplomskiRad.Helper;
 
 namespace DiplomskiRad.ViewModels
 {
@@ -32,10 +33,11 @@ namespace DiplomskiRad.ViewModels
         public ChessBoardViewModel()
         {
             ChessSquares = SetUpBoard();
-            AvailableMoves = new ObservableCollection<ChessSquare>();
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
+
+            HighlightedSquares = new List<ushort>();
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
@@ -60,14 +62,28 @@ namespace DiplomskiRad.ViewModels
                     var pieceName = _initialPieceOrder[row, column];
                     if (!string.IsNullOrEmpty(pieceName))
                     {
+                        Color color;
+                        switch (row)
+                        {
+                            case 0 or 1:
+                                color = Color.Black;
+                                break;
+                            case 6 or 7:
+                                color = Color.White;
+                                break;
+                            default:
+                                color = Color.White;
+                                break;
+                        }
+
                         Piece piece = pieceName switch
                         {
-                            "Pawn" => new Pawn(square.Color),
-                            "Rook" => new Rook(square.Color),
-                            "Knight" => new Knight(square.Color),
-                            "Bishop" => new Bishop(square.Color),
-                            "Queen" => new Queen(square.Color),
-                            _ => new King(square.Color)
+                            "Pawn" => new Pawn(color, row, column),
+                            "Rook" => new Rook(color, row, column),
+                            "Knight" => new Knight(color, row, column),
+                            "Bishop" => new Bishop(color, row, column),
+                            "Queen" => new Queen(color, row, column),
+                            _ => new King(color, row, column)
                         };
 
                         var imagePath = Path.Combine(targetFolder, $"{pieceName}_{c}.png");
@@ -80,6 +96,16 @@ namespace DiplomskiRad.ViewModels
                 }
             }
 
+            chessSquares[19] = new ChessSquare
+            {
+                Row = 2,
+                Column = 3,
+                Color = "#3a9cce",
+                Piece = new Queen(Color.White, 2, 3),
+                ImagePath = Path.Combine(targetFolder, "Queen_W.png")
+        };
+
+
             return chessSquares;
         }
 
@@ -88,6 +114,8 @@ namespace DiplomskiRad.ViewModels
         public ICommand ClickCommand { get; private set; }
         public ICommand MoveCommand { get; private set; }
         private ChessSquare _selectedSquare;
+        private List<ushort> HighlightedSquares { get; set; }
+
         public ChessSquare? SelectedSquare
         {
             get => _selectedSquare; 
@@ -98,7 +126,6 @@ namespace DiplomskiRad.ViewModels
                 UpdateAvailableMoves();
             }
         }
-        public ObservableCollection<ChessSquare> AvailableMoves { get; private set; }
 
         private bool CanExecuteClickCommand(object parameter)
         {
@@ -114,13 +141,16 @@ namespace DiplomskiRad.ViewModels
             if (SelectedSquare is null) // nista nije izabrano
             {
                 SelectedSquare = new ChessSquare(selectedSquare);
-                ChessSquares.First(x => x.Row == SelectedSquare.Row && x.Column == SelectedSquare.Column).Color = "Black";
+                int index = ChessSquares.ToList()
+                    .FindIndex(x => x.Row == SelectedSquare.Row && x.Column == SelectedSquare.Column);
+                HighlightedSquares.Add((ushort)index);
+                ChessSquares[index].Color = "Black";
                 //ChessSquares.First(x => x is { Row: 2, Column: 0 }).ImagePath = ChessSquares.First(x => x is { Row: 0, Column: 0 }).ImagePath; test samo
             }
             else if (SelectedSquare.Equals(selectedSquare)) // ista izabrana 2 puta
             {
-                var color = (SelectedSquare.Row + SelectedSquare.Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
-                ChessSquares.First(x => x.Row == SelectedSquare.Row && x.Column == SelectedSquare.Column).Color = color;
+                foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                HighlightedSquares.Clear();
                 SelectedSquare = null;
             }
         }
@@ -137,66 +167,32 @@ namespace DiplomskiRad.ViewModels
 
         private void UpdateAvailableMoves()
         {
-            AvailableMoves.Clear();
-
             if (SelectedSquare?.Piece == null) return;
-            var validMoves = GetValidMoves(SelectedSquare);
-            foreach (var move in validMoves) AvailableMoves.Add(move);
+            HighlightedSquares.AddRange(GetValidMoves(SelectedSquare));
+
+            foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
         }
 
-        private List<ChessSquare> GetValidMoves(ChessSquare chessSquare)
+        private List<ushort> GetValidMoves(ChessSquare chessSquare)
         {
-            var retVal = new List<ChessSquare>();
 
-            switch (chessSquare.Piece.Name)
+            switch (chessSquare.Piece.Type)
             {
-                case "King":
+                case PieceType.King:
                     break;
-                case "Queen":
+                case PieceType.Queen:
                     break;
-                case "Rook":
+                case PieceType.Rook:
                     break;
-                case "Bishop":
+                case PieceType.Bishop:
                     break;
-                case "Knight":
+                case PieceType.Knight:
                     break;
-                case "Pawn":
-                    HighlightPawnMoves(chessSquare, retVal);
-                    break;
+                case PieceType.Pawn:
+                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
             }
 
-            return retVal;
-        }
-
-
-        private void HighlightPawnMoves(ChessSquare chessSquare, List<ChessSquare> retVal)
-        {
-            var pos = Mapping.DoubleIndexToCoordinate[new KeyValuePair<int, int>(chessSquare.Row, chessSquare.Column)];
-            int file = Convert.ToInt32(pos.Substring(1));
-            //dodaj ono sto si zamislio can move zbog saha da li je vezan i ta sranja da li moze da uzme figuru i na kraju promocija bla bla
-
-            if (chessSquare.Color.Equals("White"))
-            {
-                if (((Pawn)(chessSquare.Piece)).IsFirstMove)
-                {
-                    string firstSquare = $"{pos[0]}{file + 1}", secondSquare = $"{pos[0]}{file + 2}";
-                }
-                else
-                {
-                    string firstSquare = $"{pos[0]}{file + 1}";
-                }
-            }
-            else
-            {
-                if (((Pawn)(chessSquare.Piece)).IsFirstMove)
-                {
-                    string firstSquare = $"{pos[0]}{file - 1}", secondSquare = $"{pos[0]}{file - 2}";
-                }
-                else
-                {
-
-                }
-            }
+            return new List<ushort>();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
