@@ -1,18 +1,26 @@
 ﻿<Window x:Class="DiplomskiRad.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DiplomskiRad"
         xmlns:views="clr-namespace:DiplomskiRad.Views"
+        xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
         mc:Ignorable="d"
         Height="800" Width="800">
-    <Grid>
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels:ChessBoardViewModel}">
+            <views:BoardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ColorSelectionViewModel}">
+            <views:ColorSelectionView/>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid Background="#423936">
         <Border BorderThickness="50" BorderBrush="{StaticResource BoardOutLine}">
-            <views:BoardView></views:BoardView>
+            <ContentControl Content="{Binding CurrentViewModel}"/>
         </Border>
-
-
-
     </Grid>
 </Window>

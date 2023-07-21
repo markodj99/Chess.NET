@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
 {
-    public class ChessBoardViewModel : INotifyPropertyChanged
+    public class ChessBoardViewModel : ViewModelBase
     {
         #region BooardSetUp
 
@@ -60,20 +60,12 @@ namespace DiplomskiRad.ViewModels
                     var pieceName = _initialPieceOrder[row, column];
                     if (!string.IsNullOrEmpty(pieceName))
                     {
-                        Color color;
-                        switch (row)
+                        var color = row switch
                         {
-                            case 0 or 1:
-                                color = Color.Black;
-                                break;
-                            case 6 or 7:
-                                color = Color.White;
-                                break;
-                            default:
-                                color = Color.White;
-                                break;
-                        }
-
+                            0 or 1 => Color.Black,
+                            6 or 7 => Color.White,
+                            _ => Color.White,
+                        };
                         Piece piece = pieceName switch
                         {
                             "Pawn" => new Pawn(color, row, column),
@@ -99,6 +91,8 @@ namespace DiplomskiRad.ViewModels
 
         #endregion
 
+        #region MovingLogic
+
         public ICommand ClickCommand { get; private set; }
         public ICommand MoveCommand { get; private set; }
         private ChessSquare _selectedSquare;
@@ -106,11 +100,10 @@ namespace DiplomskiRad.ViewModels
 
         public ChessSquare? SelectedSquare
         {
-            get => _selectedSquare; 
+            get => _selectedSquare;
             set
             {
                 _selectedSquare = value;
-                OnPropertyChanged(nameof(SelectedSquare));
                 UpdateAvailableMoves();
             }
         }
@@ -160,7 +153,6 @@ namespace DiplomskiRad.ViewModels
             foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        #endregion
     }
 }
