@@ -4,11 +4,8 @@ using DiplomskiRad.Models.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.Common;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
@@ -97,71 +94,6 @@ namespace DiplomskiRad.ViewModels
                 }
             }
 
-            #region Test
-
-            //test
-            //chessSquares[35] = new ChessSquare
-            //{
-            //    Row = 4,
-            //    Column = 3,
-            //    Color = "#3a9cce",
-            //    Piece = new Pawn(Color.White, 4, 3),
-            //    ImagePath = Path.Combine(targetFolder, "Pawn_W.png")
-            //};
-            //((Pawn)chessSquares[35].Piece).IsFirstMove = false;
-            //chessSquares[36] = new ChessSquare
-            //{
-            //    Row = 4,
-            //    Column = 4,
-            //    Color = "#CCCCCC",
-            //    Piece = new Pawn(Color.Black, 4, 4),
-            //    ImagePath = Path.Combine(targetFolder, "Pawn_B.png")
-            //};
-            //((Pawn)chessSquares[36].Piece).IsFirstMove = false;
-            //chessSquares[43] = new ChessSquare
-            //{
-            //    Row = 5,
-            //    Column = 3,
-            //    Color = "#3a9cce",
-            //    Piece = new Queen(Color.White, 2, 3),
-            //    ImagePath = Path.Combine(targetFolder, "Queen_W.png")
-            //};
-            chessSquares[27] = new ChessSquare
-            {
-                Row = 3,
-                Column = 3,
-                Color = "#CCCCCC",
-                Piece = new Bishop(Color.Black, 3, 3),
-                ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
-            };
-            chessSquares[36] = new ChessSquare
-            {
-                Row = 4,
-                Column = 4,
-                Color = "#CCCCCC",
-                Piece = new Bishop(Color.Black, 4, 4),
-                ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
-            };
-
-            chessSquares[28] = new ChessSquare
-            {
-                Row = 3,
-                Column = 4,
-                Color = "#3a9cce",
-                Piece = new Bishop(Color.White, 3, 4),
-                ImagePath = Path.Combine(targetFolder, "Bishop_W.png")
-            };
-            chessSquares[35] = new ChessSquare
-            {
-                Row = 4,
-                Column = 3,
-                Color = "#3a9cce",
-                Piece = new Bishop(Color.White, 4, 3),
-                ImagePath = Path.Combine(targetFolder, "Bishop_W.png")
-            };
-
-            #endregion
-
             return chessSquares;
         }
 
@@ -224,31 +156,8 @@ namespace DiplomskiRad.ViewModels
         private void UpdateAvailableMoves()
         {
             if (SelectedSquare?.Piece == null) return;
-            HighlightedSquares.AddRange(GetValidMoves(SelectedSquare));
-
+            HighlightedSquares.AddRange(SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList()));
             foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
-        }
-
-        private List<ushort> GetValidMoves(ChessSquare chessSquare)
-        {
-
-            switch (chessSquare.Piece.Type)
-            {
-                case PieceType.King:
-                    break;
-                case PieceType.Queen:
-                    break;
-                case PieceType.Rook:
-                    break;
-                case PieceType.Bishop:
-                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
-                case PieceType.Knight:
-                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
-                case PieceType.Pawn:
-                    return chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
-            }
-
-            return new List<ushort>();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

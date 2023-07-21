@@ -27,7 +27,7 @@ namespace DiplomskiRad.Models
             {
                 if (Row - i >= 0 && Column - i >= 0)
                 {
-                    if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row - i, Column - 1)]].Piece == null)
+                    if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row - i, Column - i)]].Piece == null)
                         allDiags.Add(new(Row - i, Column - i));
                     else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row - i, Column - i)]].Piece
                                  .Color != Color)
@@ -77,7 +77,7 @@ namespace DiplomskiRad.Models
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row + i, Column + i)]].Piece == null)
                         allDiags.Add(new(Row + i, Column + i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row + i, Column + 1)]].Piece
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(Row + i, Column + i)]].Piece
                                  .Color != Color)
                     {
                         allDiags.Add(new(Row + i, Column + i));
