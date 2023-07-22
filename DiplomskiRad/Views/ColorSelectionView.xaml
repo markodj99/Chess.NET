@@ -4,12 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:ColorSelectionViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="450"
              Height="200" Width="450">
-    <UserControl.DataContext>
-        <viewModels:ColorSelectionViewModel/>
-    </UserControl.DataContext>
     <Grid Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

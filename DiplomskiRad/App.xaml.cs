@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DiplomskiRad.Stores;
+using DiplomskiRad.ViewModels;
 using System.Windows;
 
 namespace DiplomskiRad
@@ -13,5 +9,23 @@ namespace DiplomskiRad
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            var colorSelectionStore = new ColorSelectionStore();
+
+            var colorSelectionViewModel = new ColorSelectionViewModel(colorSelectionStore);
+            var engineStrengthViewModel = new EngineStrengthViewModel();
+            var chessBoardViewModel = new ChessBoardViewModel();
+
+            var mainViewModel = new MainWindowViewModel(colorSelectionStore, colorSelectionViewModel, chessBoardViewModel, engineStrengthViewModel);
+
+            MainWindow = new MainWindow()
+            {
+                DataContext = mainViewModel
+            };
+            MainWindow.Show();
+
+            base.OnStartup(e);
+        }
     }
 }

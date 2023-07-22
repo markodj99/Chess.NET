@@ -6,10 +6,8 @@
         xmlns:views="clr-namespace:DiplomskiRad.Views"
         xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel}"
         Height="800" Width="800">
-    <Window.DataContext>
-        <viewModels:MainWindowViewModel/>
-    </Window.DataContext>
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:ChessBoardViewModel}">
             <views:BoardView />
@@ -20,7 +18,8 @@
     </Window.Resources>
     <Grid Background="#423936">
         <Border BorderThickness="50" BorderBrush="{StaticResource BoardOutLine}">
-            <ContentControl Content="{Binding CurrentViewModel}"/>
+            <!--<ContentControl Content="{Binding CurrentViewModel}"/>-->
+            <views:EngineStrengthView></views:EngineStrengthView>
         </Border>
     </Grid>
 </Window>

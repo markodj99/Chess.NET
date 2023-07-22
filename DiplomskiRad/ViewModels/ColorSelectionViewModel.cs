@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DiplomskiRad.Commands;
 using DiplomskiRad.Models.Enums;
+using DiplomskiRad.Stores;
 
 namespace DiplomskiRad.ViewModels
 {
@@ -13,18 +14,14 @@ namespace DiplomskiRad.ViewModels
     {
         public ICommand WhiteCommand { get; private set; }
         public ICommand BlackCommand { get; private set; }
-        private Color SelectedColor { get; set; }
+        private readonly ColorSelectionStore _colorSelectionStore;
 
-        public ColorSelectionViewModel()
+        public ColorSelectionViewModel(ColorSelectionStore colorSelectionStore)
         {
-            WhiteCommand = new Command(ExecuteWhiteCommand, CanExecuteWhiteCommand);
-            BlackCommand = new Command(ExecuteBlackCommand, CanExecuteBlackCommand);
+            _colorSelectionStore = colorSelectionStore;
+
+            WhiteCommand = new Command((o) => _colorSelectionStore.SelectColor(Color.White), (o) => true);
+            BlackCommand = new Command((o) => _colorSelectionStore.SelectColor(Color.Black), (o) => true);
         }
-
-        private bool CanExecuteWhiteCommand(object parameter) => true;
-        private void ExecuteWhiteCommand(object parameter) => SelectedColor = Color.White;
-
-        private bool CanExecuteBlackCommand(object parameter) => true;
-        private void ExecuteBlackCommand(object parameter) => SelectedColor = Color.Black;
     }
 }

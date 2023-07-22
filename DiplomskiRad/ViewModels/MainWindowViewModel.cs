@@ -1,4 +1,5 @@
-﻿using DiplomskiRad.Commands;
+﻿using DiplomskiRad.Stores;
+using DiplomskiRad.Models.Enums;
 
 namespace DiplomskiRad.ViewModels
 {
@@ -12,22 +13,32 @@ namespace DiplomskiRad.ViewModels
 
         }
         private ColorSelectionViewModel _colorSelectionViewModel;
+        private EngineStrengthViewModel _engineStrengthViewModel;
         private ChessBoardViewModel _chessBoardViewModel;
-        //public Command NavigationCommand { get; private set; }
+        private readonly ColorSelectionStore _colorSelectionStore;
 
-        public MainWindowViewModel()
+        private Color _color = Color.White;
+
+
+        public MainWindowViewModel(ColorSelectionStore colorSelectionStore, ColorSelectionViewModel colorSelectionViewModel,
+            ChessBoardViewModel chessBoardViewModel, EngineStrengthViewModel engineStrengthViewModel)
         {
-            _colorSelectionViewModel = new ColorSelectionViewModel();
-            _chessBoardViewModel = new ChessBoardViewModel();
+            _colorSelectionStore = colorSelectionStore;
+
+            _colorSelectionViewModel = colorSelectionViewModel;
+            _engineStrengthViewModel = engineStrengthViewModel;
+            _chessBoardViewModel = chessBoardViewModel;
+
+            _colorSelectionStore.ColorSelected += ColorSelected;
 
             CurrentViewModel = _colorSelectionViewModel;
         }
 
-        //private bool CanExecuteNavigationCommand(object parameter) => true;
 
-        //private void ExecuteNavigationCommand(object parameter)
-        //{
-
-        //}
+        private void ColorSelected(Color color )
+        {
+            _color = color;
+            CurrentViewModel = _chessBoardViewModel;
+        }
     }
 }
