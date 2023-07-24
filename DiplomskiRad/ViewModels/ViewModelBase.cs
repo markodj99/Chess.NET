@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace DiplomskiRad.ViewModels
@@ -17,5 +16,10 @@ namespace DiplomskiRad.ViewModels
         }
 
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+
+        public virtual void Dispose()
+        {
+
+        }
     }
 }

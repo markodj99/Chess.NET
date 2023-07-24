@@ -3,7 +3,6 @@ using DiplomskiRad.Models;
 using DiplomskiRad.Models.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -12,6 +11,40 @@ namespace DiplomskiRad.ViewModels
 {
     public class ChessBoardViewModel : ViewModelBase
     {
+        public Color PlayerColor { get; set; }
+        public RatingEvaluation Evaluation { get; set; }
+        public int EngineStrength {get; set; }
+
+        private double _scaleX = 1.0;
+        public double ScaleX
+        {
+            get => _scaleX;
+            set
+            {
+                if (_scaleX == value) return;
+                _scaleX = value;
+                OnPropertyChanged(nameof(ScaleX));
+            }
+        }
+        private double _scaleY = 1.0;
+        public double ScaleY
+        {
+            get => _scaleY;
+            set
+            {
+                if (_scaleY == value) return;
+                _scaleY = value;
+                OnPropertyChanged(nameof(ScaleY));
+            }
+        }
+
+        private void FlipBoard()
+        {
+            ScaleX = -ScaleX;
+            ScaleY = -ScaleY;
+        }
+
+
         #region BooardSetUp
 
         public ObservableCollection<ChessSquare> ChessSquares { get; set; }
@@ -30,12 +63,27 @@ namespace DiplomskiRad.ViewModels
 
         public ChessBoardViewModel()
         {
-            ChessSquares = SetUpBoard();
+            if (Evaluation == RatingEvaluation.UserSelected)
+            {
+                ChessSquares = SetUpBoard();
+                if(PlayerColor ==  Color.Black) FlipBoard();
+            }
+            else // puzzles
+            {
+                
+            }
+
+
+
+
+
+            
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
 
             HighlightedSquares = new List<ushort>();
+
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()

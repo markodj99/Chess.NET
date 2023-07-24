@@ -3,23 +3,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:DiplomskiRad.Views"
         xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
+        xmlns:views="clr-namespace:DiplomskiRad.Views"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel}"
         Height="800" Width="800">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:ChessBoardViewModel}">
-            <views:BoardView />
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:ColorSelectionViewModel}">
             <views:ColorSelectionView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:EngineStrengthViewModel}">
+            <views:EngineStrengthView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ChessBoardViewModel}">
+            <views:ChessBoardView />
+        </DataTemplate>
     </Window.Resources>
     <Grid Background="#423936">
-        <Border BorderThickness="50" BorderBrush="{StaticResource BoardOutLine}">
-            <!--<ContentControl Content="{Binding CurrentViewModel}"/>-->
-            <views:EngineStrengthView></views:EngineStrengthView>
+        <Border BorderThickness="50" BorderBrush="#423936">
+            <ContentControl Content="{Binding CurrentViewModel}"/>
         </Border>
     </Grid>
 </Window>

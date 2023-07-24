@@ -12,12 +12,13 @@ namespace DiplomskiRad
         protected override void OnStartup(StartupEventArgs e)
         {
             var colorSelectionStore = new ColorSelectionStore();
+            var engineStrengthStore = new EngineStrengthStore();
 
             var colorSelectionViewModel = new ColorSelectionViewModel(colorSelectionStore);
-            var engineStrengthViewModel = new EngineStrengthViewModel();
+            var engineStrengthViewModel = new EngineStrengthViewModel(engineStrengthStore);
             var chessBoardViewModel = new ChessBoardViewModel();
 
-            var mainViewModel = new MainWindowViewModel(colorSelectionStore, colorSelectionViewModel, chessBoardViewModel, engineStrengthViewModel);
+            var mainViewModel = new MainWindowViewModel(colorSelectionStore, engineStrengthStore, colorSelectionViewModel, chessBoardViewModel, engineStrengthViewModel);
 
             MainWindow = new MainWindow()
             {

@@ -12,4 +12,14 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Engine\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Engine\stockfish.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

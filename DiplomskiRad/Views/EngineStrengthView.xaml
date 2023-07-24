@@ -1,5 +1,6 @@
 ﻿<UserControl x:Class="DiplomskiRad.Views.EngineStrengthView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -24,21 +25,22 @@
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <Slider 
-                    Grid.Column="0" Width="300"
+            <Slider Style="{DynamicResource MaterialDesignDiscreteSlider}" Foreground="NavajoWhite"
+                    Grid.Column="0" 
+                    Width="300"
                     Minimum="1"
                     Maximum="100"
-                    TickPlacement="BottomRight"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Value="{Binding nivo}"/>
+                    Value="{Binding SelectedStrength}"/>
             <Button Grid.Column="1"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Margin="5"
-                    Command="{Binding WhiteCommand}">
+                    Command="{Binding ConfirmCommand}">
+                <materialDesign:PackIcon Kind="Check" Height="40" Width="40"/>
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="Background" Value="White"/>
@@ -68,7 +70,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Margin="5"
-                Command="{Binding WhiteCommand}">
+                Command="{Binding PuzzleCommand}">
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="White"/>

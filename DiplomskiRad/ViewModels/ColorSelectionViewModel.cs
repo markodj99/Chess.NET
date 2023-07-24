@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using DiplomskiRad.Commands;
+﻿using DiplomskiRad.Commands;
 using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Stores;
+using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
 {
