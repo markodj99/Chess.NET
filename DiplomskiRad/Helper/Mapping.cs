@@ -48,7 +48,6 @@ namespace DiplomskiRad.Helper
             {"a2", new KeyValuePair<int, int>(6, 0)}, {"b2", new KeyValuePair<int, int>(6, 1)}, {"c2", new KeyValuePair<int, int>(6, 2)}, {"d2", new KeyValuePair<int, int>(6, 3)}, {"e2", new KeyValuePair<int, int>(6, 4)}, {"f2", new KeyValuePair<int, int>(6, 5)}, {"g2", new KeyValuePair<int, int>(6, 6)}, {"h2", new KeyValuePair<int, int>(6, 7)},
             {"a1", new KeyValuePair<int, int>(7, 0)}, {"b1", new KeyValuePair<int, int>(7, 1)}, {"c1", new KeyValuePair<int, int>(7, 2)}, {"d1", new KeyValuePair<int, int>(7, 3)}, {"e1", new KeyValuePair<int, int>(7, 4)}, {"f1", new KeyValuePair<int, int>(7, 5)}, {"g1", new KeyValuePair<int, int>(7, 6)}, {"h1", new KeyValuePair<int, int>(7, 7)},
         };
-
         public static Dictionary<KeyValuePair<int, int>, ushort> DoubleIndexToIndex { get; set; } = new Dictionary<KeyValuePair<int, int>, ushort>(64)
         {
             {new KeyValuePair<int, int>(0, 0), 0}, {new KeyValuePair<int, int>(0, 1), 1}, {new KeyValuePair<int, int>(0, 2), 2}, {new KeyValuePair<int, int>(0, 3), 3}, {new KeyValuePair<int, int>(0, 4), 4}, {new KeyValuePair<int, int>(0, 5), 5}, {new KeyValuePair<int, int>(0, 6), 6}, {new KeyValuePair<int, int>(0, 7), 7},

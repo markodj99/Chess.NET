@@ -5,45 +5,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
+using DiplomskiRad.Helper;
 
 namespace DiplomskiRad.ViewModels
 {
     public class ChessBoardViewModel : ViewModelBase
     {
         public Color PlayerColor { get; set; }
-        public RatingEvaluation Evaluation { get; set; }
-        public int EngineStrength {get; set; }
-
-        private double _scaleX = 1.0;
-        public double ScaleX
-        {
-            get => _scaleX;
-            set
-            {
-                if (_scaleX == value) return;
-                _scaleX = value;
-                OnPropertyChanged(nameof(ScaleX));
-            }
-        }
-        private double _scaleY = 1.0;
-        public double ScaleY
-        {
-            get => _scaleY;
-            set
-            {
-                if (_scaleY == value) return;
-                _scaleY = value;
-                OnPropertyChanged(nameof(ScaleY));
-            }
-        }
-
-        private void FlipBoard()
-        {
-            ScaleX = -ScaleX;
-            ScaleY = -ScaleY;
-        }
-
+        public int EngineStrength { get; set; }
+        public FlipBoard FlipBoard {get; set; }
+        public List<ChessPuzzle> Puzzles { get; set; }
 
         #region BooardSetUp
 
@@ -63,27 +36,45 @@ namespace DiplomskiRad.ViewModels
 
         public ChessBoardViewModel()
         {
-            if (Evaluation == RatingEvaluation.UserSelected)
-            {
-                ChessSquares = SetUpBoard();
-                if(PlayerColor ==  Color.Black) FlipBoard();
-            }
-            else // puzzles
-            {
-                
-            }
-
-
-
-
-
-            
+            FlipBoard = new FlipBoard();
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
 
             HighlightedSquares = new List<ushort>();
+            ChessSquares = new ObservableCollection<ChessSquare>();
+            Puzzles = new List<ChessPuzzle>();
+        }
 
+        public void BoardSetUp(RatingEvaluation evaluation)
+        {
+            if (evaluation == RatingEvaluation.UserSelected)
+            {
+                ChessSquares.Clear();
+                ChessSquares = SetUpBoard();
+                if (PlayerColor == Color.Black) FlipBoard.Flip();
+            }
+            else // puzzles
+            {
+                var chessSquares = new ObservableCollection<ChessSquare>();
+                for (int row = 0; row < 8; row++)
+                {
+                    for (int column = 0; column < 8; column++)
+                    {
+                        var square = new ChessSquare
+                        {
+                            Row = row,
+                            Column = column,
+                            Color = (row + column) % 2 == 0 ? "#CCCCCC" : "#3a9cce" // oke boje za sad
+                        };
+
+                        chessSquares.Add(square);
+                    }
+                }
+                ChessSquares = chessSquares;
+
+                Puzzles = Parser.ParseFile();
+            }
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
@@ -143,9 +134,9 @@ namespace DiplomskiRad.ViewModels
 
         public ICommand ClickCommand { get; private set; }
         public ICommand MoveCommand { get; private set; }
-        private ChessSquare _selectedSquare;
         private List<ushort> HighlightedSquares { get; set; }
 
+        private ChessSquare? _selectedSquare;
         public ChessSquare? SelectedSquare
         {
             get => _selectedSquare;

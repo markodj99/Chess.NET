@@ -43,8 +43,8 @@ namespace DiplomskiRad.ViewModels
 
         private void StrengthSelected(int selectedStrength, RatingEvaluation evaluation)
         {
-            _chessBoardViewModel.Evaluation = evaluation;
             _chessBoardViewModel.EngineStrength = selectedStrength;
+            _chessBoardViewModel.BoardSetUp(evaluation);
             CurrentViewModel = _chessBoardViewModel;
         }
 
