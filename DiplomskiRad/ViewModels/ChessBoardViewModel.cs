@@ -16,7 +16,6 @@ namespace DiplomskiRad.ViewModels
         public Color PlayerColor { get; set; }
         public int EngineStrength { get; set; }
         public FlipBoard FlipBoard {get; set; }
-        public List<ChessPuzzle> Puzzles { get; set; }
 
         #region BooardSetUp
 
@@ -74,6 +73,8 @@ namespace DiplomskiRad.ViewModels
                 ChessSquares = chessSquares;
 
                 Puzzles = Parser.ParseFile();
+
+                PuzzleRush(1);
             }
         }
 
@@ -129,6 +130,61 @@ namespace DiplomskiRad.ViewModels
         }
 
         #endregion
+
+        #region Puzzles
+
+        public List<ChessPuzzle> Puzzles { get; set; }
+
+        private void PuzzleRush(int ordinalNumber)
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
+            foreach (var wPos in Puzzles[ordinalNumber].WhitePos)
+            {
+                var coordinates = Mapping.CoordinateToDoubleIndex[wPos.Substring(1)];
+                var piece = wPos[0] switch
+                {
+                    'K' => new King(Color.White, coordinates.Key, coordinates.Value),
+                    'Q' => new Queen(Color.White, coordinates.Key, coordinates.Value),
+                    'R' => new Rook(Color.White, coordinates.Key, coordinates.Value),
+                    'B' => new Bishop(Color.White, coordinates.Key, coordinates.Value),
+                    'N' => new Knight(Color.White, coordinates.Key, coordinates.Value),
+                    'P' => new Pawn(Color.White, coordinates.Key, coordinates.Value),
+                    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
+                };
+                ChessSquares[Mapping.CoordinateToIndex[wPos.Substring(1)]].Piece = piece;
+                ChessSquares[Mapping.CoordinateToIndex[wPos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_W.png");
+            }
+
+            foreach (var bPos in Puzzles[ordinalNumber].BlackPos)
+            {
+                var coordinates = Mapping.CoordinateToDoubleIndex[bPos.Substring(1)];
+                var piece = bPos[0] switch
+                {
+                    'K' => new King(Color.Black, coordinates.Key, coordinates.Value),
+                    'Q' => new Queen(Color.Black, coordinates.Key, coordinates.Value),
+                    'R' => new Rook(Color.Black, coordinates.Key, coordinates.Value),
+                    'B' => new Bishop(Color.Black, coordinates.Key, coordinates.Value),
+                    'N' => new Knight(Color.Black, coordinates.Key, coordinates.Value),
+                    'P' => new Pawn(Color.Black, coordinates.Key, coordinates.Value),
+                    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
+                };
+                ChessSquares[Mapping.CoordinateToIndex[bPos.Substring(1)]].Piece = piece;
+                ChessSquares[Mapping.CoordinateToIndex[bPos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_B.png");
+            }
+
+            if (Puzzles[ordinalNumber].FirstMove == Color.White) FlipBoard.Flip();
+        }
+
+        private void SetUpPuzzle()
+        {
+
+        }
+
+        #endregion
+
+
+
 
         #region MovingLogic
 

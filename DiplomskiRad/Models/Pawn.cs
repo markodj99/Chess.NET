@@ -29,7 +29,15 @@ namespace DiplomskiRad.Models
 
             moves.AddRange(GetAllPossibleCaptures().Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
 
-            // kasnije uradi za en passant i proveru za sah al ima do toga vremena
+            IsKingInCheck(moves, board, chessSquare, Color);
+
+
+
+
+
+
+
+            //kasnije uradi za en passant i proveru za sah al ima do toga vremena
 
             return moves;
         }
