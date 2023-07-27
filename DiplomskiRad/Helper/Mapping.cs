@@ -6,8 +6,8 @@ namespace DiplomskiRad.Helper
     {
         public static Dictionary<ushort, string> IndexToCoordinate { get; set; } = new Dictionary<ushort, string>(64)
         {
-            {0, "a8"}, {1, "b8"}, {2, "c8"}, {3, "d8"}, {4, "e8"}, {5, "f8"}, {6, "g8"}, {7, "h8"},
-            {8, "a7"}, {9, "b7"}, {10, "c7"}, {11, "d7"}, {12, "e7"}, {13, "f7"}, {14, "g7"}, {15, "h7"},
+            {0,  "a8"}, {1,  "b8"}, {2,  "c8"}, {3,  "d8"}, {4,  "e8"}, {5,  "f8"}, {6,  "g8"}, {7,  "h8"},
+            {8,  "a7"}, {9,  "b7"}, {10, "c7"}, {11, "d7"}, {12, "e7"}, {13, "f7"}, {14, "g7"}, {15, "h7"},
             {16, "a6"}, {17, "b6"}, {18, "c6"}, {19, "d6"}, {20, "e6"}, {21, "f6"}, {22, "g6"}, {23, "h6"},
             {24, "a5"}, {25, "b5"}, {26, "c5"}, {27, "d5"}, {28, "e5"}, {29, "f5"}, {30, "g5"}, {31, "h5"},
             {32, "a4"}, {33, "b4"}, {34, "c4"}, {35, "d4"}, {36, "e4"}, {37, "f4"}, {38, "g4"}, {39, "h4"},
@@ -17,8 +17,8 @@ namespace DiplomskiRad.Helper
         };
         public static Dictionary<string, ushort> CoordinateToIndex { get; set; } = new Dictionary<string, ushort>(64)
         {
-            {"a8", 0}, {"b8", 1}, {"c8", 2}, {"d8", 3}, {"e8", 4}, {"f8", 5}, {"g8", 6}, {"h8", 7},
-            {"a7", 8}, {"b7", 9}, {"c7", 10}, {"d7", 11}, {"e7",12}, {"f7", 13}, {"g7", 14}, {"h7", 15},
+            {"a8",  0}, {"b8",  1}, {"c8",  2}, {"d8",  3}, {"e8",  4}, {"f8",  5}, {"g8",  6}, {"h8",  7},
+            {"a7",  8}, {"b7",  9}, {"c7", 10}, {"d7", 11}, {"e7", 12}, {"f7", 13}, {"g7", 14}, {"h7", 15},
             {"a6", 16}, {"b6", 17}, {"c6", 18}, {"d6", 19}, {"e6", 20}, {"f6", 21}, {"g6", 22}, {"h6", 23},
             {"a5", 24}, {"b5", 25}, {"c5", 26}, {"d5", 27}, {"e5", 28}, {"f5", 29}, {"g5", 30}, {"h5", 31},
             {"a4", 32}, {"b4", 33}, {"c4", 34}, {"d4", 35}, {"e4", 36}, {"f4", 37}, {"g4", 38}, {"h4", 39},
@@ -36,6 +36,17 @@ namespace DiplomskiRad.Helper
             {new KeyValuePair<int, int>(5, 0), "a3"}, {new KeyValuePair<int, int>(5, 1), "b3"}, {new KeyValuePair<int, int>(5, 2), "c3"}, {new KeyValuePair<int, int>(5, 3), "d3"}, {new KeyValuePair<int, int>(5, 4), "e3"}, {new KeyValuePair<int, int>(5, 5), "f3"}, {new KeyValuePair<int, int>(5, 6), "g3"}, {new KeyValuePair<int, int>(5, 7), "h3"},
             {new KeyValuePair<int, int>(6, 0), "a2"}, {new KeyValuePair<int, int>(6, 1), "b2"}, {new KeyValuePair<int, int>(6, 2), "c2"}, {new KeyValuePair<int, int>(6, 3), "d2"}, {new KeyValuePair<int, int>(6, 4), "e2"}, {new KeyValuePair<int, int>(6, 5), "f2"}, {new KeyValuePair<int, int>(6, 6), "g2"}, {new KeyValuePair<int, int>(6, 7), "h2"},
             {new KeyValuePair<int, int>(7, 0), "a1"}, {new KeyValuePair<int, int>(7, 1), "b1"}, {new KeyValuePair<int, int>(7, 2), "c1"}, {new KeyValuePair<int, int>(7, 3), "d1"}, {new KeyValuePair<int, int>(7, 4), "e1"}, {new KeyValuePair<int, int>(7, 5), "f1"}, {new KeyValuePair<int, int>(7, 6), "g1"}, {new KeyValuePair<int, int>(7, 7), "h1"},
+        };
+        public static Dictionary<ushort, KeyValuePair<int, int>> IndexToDoubleIndex { get; set; } = new Dictionary<ushort, KeyValuePair<int, int>>(64)
+        {
+            {0,  new KeyValuePair<int, int>(0, 0)}, {1,  new KeyValuePair<int, int>(0, 1)}, {2,  new KeyValuePair<int, int>(0, 2)}, { 3, new KeyValuePair<int, int>(0, 3)}, {4,  new KeyValuePair<int, int>(0, 4)}, {5,  new KeyValuePair<int, int>(0, 5)}, {6,  new KeyValuePair<int, int>(0, 6)}, {7,  new KeyValuePair<int, int>(0, 7)},
+            {8,  new KeyValuePair<int, int>(1, 0)}, {9,  new KeyValuePair<int, int>(1, 1)}, {10, new KeyValuePair<int, int>(1, 2)}, {11, new KeyValuePair<int, int>(1, 3)}, {12, new KeyValuePair<int, int>(1, 4)}, {13, new KeyValuePair<int, int>(1, 5)}, {14, new KeyValuePair<int, int>(1, 6)}, {15, new KeyValuePair<int, int>(1, 7)},
+            {16, new KeyValuePair<int, int>(2, 0)}, {17, new KeyValuePair<int, int>(2, 1)}, {18, new KeyValuePair<int, int>(2, 2)}, {19, new KeyValuePair<int, int>(2, 3)}, {20, new KeyValuePair<int, int>(2, 4)}, {21, new KeyValuePair<int, int>(2, 5)}, {22, new KeyValuePair<int, int>(2, 6)}, {23, new KeyValuePair<int, int>(2, 7)},
+            {24, new KeyValuePair<int, int>(3, 0)}, {25, new KeyValuePair<int, int>(3, 1)}, {26, new KeyValuePair<int, int>(3, 2)}, {27, new KeyValuePair<int, int>(3, 3)}, {28, new KeyValuePair<int, int>(3, 4)}, {29, new KeyValuePair<int, int>(3, 5)}, {30, new KeyValuePair<int, int>(3, 6)}, {31, new KeyValuePair<int, int>(3, 7)},
+            {32, new KeyValuePair<int, int>(4, 0)}, {33, new KeyValuePair<int, int>(4, 1)}, {34, new KeyValuePair<int, int>(4, 2)}, {35, new KeyValuePair<int, int>(4, 3)}, {36, new KeyValuePair<int, int>(4, 4)}, {37, new KeyValuePair<int, int>(4, 5)}, {38, new KeyValuePair<int, int>(4, 6)}, {39, new KeyValuePair<int, int>(4, 7)},
+            {40, new KeyValuePair<int, int>(5, 0)}, {41, new KeyValuePair<int, int>(5, 1)}, {42, new KeyValuePair<int, int>(5, 2)}, {43, new KeyValuePair<int, int>(5, 3)}, {44, new KeyValuePair<int, int>(5, 4)}, {45, new KeyValuePair<int, int>(5, 5)}, {46, new KeyValuePair<int, int>(5, 6)}, {47, new KeyValuePair<int, int>(5, 7)},
+            {48, new KeyValuePair<int, int>(6, 0)}, {49, new KeyValuePair<int, int>(6, 1)}, {50, new KeyValuePair<int, int>(6, 2)}, {51, new KeyValuePair<int, int>(6, 3)}, {52, new KeyValuePair<int, int>(6, 4)}, {53, new KeyValuePair<int, int>(6, 5)}, {54, new KeyValuePair<int, int>(6, 6)}, {55, new KeyValuePair<int, int>(6, 7)},
+            {56, new KeyValuePair<int, int>(7, 0)}, {57, new KeyValuePair<int, int>(7, 1)}, {58, new KeyValuePair<int, int>(7, 2)}, {59, new KeyValuePair<int, int>(7, 3)}, {60, new KeyValuePair<int, int>(7, 4)}, {61, new KeyValuePair<int, int>(7, 5)}, {62, new KeyValuePair<int, int>(7, 6)}, {63, new KeyValuePair<int, int>(7, 7)},
         };
         public static Dictionary<string, KeyValuePair<int, int>> CoordinateToDoubleIndex { get; set; } = new Dictionary<string, KeyValuePair<int, int>>(64)
         {

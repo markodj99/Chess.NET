@@ -35,6 +35,8 @@ namespace DiplomskiRad.Models
 
         public bool IsKingInCheck(List<ushort> moves, List<ChessSquare> board, ChessSquare chessSquare, Color playerColor)
         {
+            var retVal = new List<ushort>(moves.Count);
+
             var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(chessSquare.Row, chessSquare.Column)];
             foreach (var move in moves)
             {
@@ -47,16 +49,22 @@ namespace DiplomskiRad.Models
                 {
                     if (!piece.Color.Equals(playerColor.ToString()) && piece.Piece != null)
                     {
-                        piece.Piece.Type switch
+                        var pieceMoves = piece.Piece.GetPossibleMoves(piece, board);
+                        if (!pieceMoves.Contains(move))
                         {
-                            PieceType.King => new King(Color.White, coordinates.Key, coordinates.Value),
-                            PieceType.Queen => new Queen(Color.White, coordinates.Key, coordinates.Value),
-                            PieceType.Rook => new Rook(Color.White, coordinates.Key, coordinates.Value),
-                            PieceType.Bishop => new Bishop(Color.White, coordinates.Key, coordinates.Value),
-                            PieceType.Knight => new Knight(Color.White, coordinates.Key, coordinates.Value),
-                            PieceType.Pawn => new Pawn(Color.White, coordinates.Key, coordinates.Value),
-                            _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
-                        };
+                            retVal.Add(move);
+                        }
+
+                        //piece.Piece.Type switch
+                        //{
+                        //    PieceType.King => 
+                        //    PieceType.Queen => new Queen(Color.White, coordinates.Key, coordinates.Value),
+                        //    PieceType.Rook => new Rook(Color.White, coordinates.Key, coordinates.Value),
+                        //    PieceType.Bishop => new Bishop(Color.White, coordinates.Key, coordinates.Value),
+                        //    PieceType.Knight => new Knight(Color.White, coordinates.Key, coordinates.Value),
+                        //    PieceType.Pawn => new Pawn(Color.White, coordinates.Key, coordinates.Value),
+                        //    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
+                        //};
                     }
                 }
 
