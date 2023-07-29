@@ -1,13 +1,12 @@
 ﻿using DiplomskiRad.Commands;
+using DiplomskiRad.Helper;
 using DiplomskiRad.Models;
 using DiplomskiRad.Models.Enums;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Input;
-using DiplomskiRad.Helper;
 
 namespace DiplomskiRad.ViewModels
 {
@@ -16,6 +15,9 @@ namespace DiplomskiRad.ViewModels
         public Color PlayerColor { get; set; }
         public int EngineStrength { get; set; }
         public FlipBoard FlipBoard {get; set; }
+
+        public List<ushort> LastMove { get; set; } = new List<ushort>(2);
+
 
         #region BooardSetUp
 
@@ -74,7 +76,19 @@ namespace DiplomskiRad.ViewModels
 
                 Puzzles = Parser.ParseFile();
 
-                PuzzleRush(1);
+                //var currentDirectory = Directory.GetCurrentDirectory();
+                //var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
+
+                //ChessSquares[44] = new ChessSquare()
+                //{
+                //    Row = 5,
+                //    Column = 4,
+                //    Color = "#3a9cce",
+                //    Piece = new Bishop(Color.Black, 5, 4),
+                //    ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
+                // };
+
+                PuzzleRush(2);
             }
         }
 
@@ -173,7 +187,16 @@ namespace DiplomskiRad.ViewModels
                 ChessSquares[Mapping.CoordinateToIndex[bPos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_B.png");
             }
 
-            if (Puzzles[ordinalNumber].FirstMove == Color.White) FlipBoard.Flip();
+
+            var firstMove = Puzzles[ordinalNumber].MoveOrder[0].Split("-");
+
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece = ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].Piece;
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].ImagePath = ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].ImagePath;
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece.Row = ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Row;
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece.Column = ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Column;
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].ImagePath = null;
+            ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].Piece = null;
+            //if (Puzzles[ordinalNumber].FirstMove == Color.White) FlipBoard.Flip();
         }
 
         private void SetUpPuzzle()
@@ -182,6 +205,7 @@ namespace DiplomskiRad.ViewModels
         }
 
         #endregion
+
 
 
 
@@ -244,10 +268,68 @@ namespace DiplomskiRad.ViewModels
         private void UpdateAvailableMoves()
         {
             if (SelectedSquare?.Piece == null) return;
-            HighlightedSquares.AddRange(SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList()));
+            var a = SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
+            var b = AreMovesValid(a);
+            HighlightedSquares.AddRange(b);
             foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
         }
 
         #endregion
+
+        private List<ushort> AreMovesValid(List<ushort> possibleMoves)
+        {
+            var retVal = new List<ushort>(possibleMoves);
+
+            var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)];
+            foreach (var move in possibleMoves)
+            {
+                var boardCopy = new List<ChessSquare>(ChessSquares.Count);
+
+                foreach (var square in ChessSquares)
+                {
+                    boardCopy.Add(new ChessSquare(square));
+                }
+
+                boardCopy[move].Piece = boardCopy[initialPiecePosition].Piece;
+                boardCopy[move].Piece.Row = boardCopy[move].Row;
+                boardCopy[move].Piece.Column = boardCopy[move].Column;
+                boardCopy[initialPiecePosition].Piece = null; // zamena pozicija
+
+                ushort kingPos = 100;
+                foreach (var square in boardCopy)
+                {
+                    if (square.Piece != null)
+                    {
+                        if (square.Piece.Type == PieceType.King && square.Piece.Color == SelectedSquare.Piece.Color)
+                        {
+                            kingPos = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(square.Row, square.Column)];
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var square in boardCopy)
+                {
+                    if (square.Piece != null)
+                    {
+                        if (square.Piece.Color != SelectedSquare.Piece.Color)
+                        {
+                            var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
+                            if (pieceMoves.Contains(kingPos))
+                            {
+                                retVal.Remove(move);
+                            }
+                        }
+                    }
+                }
+
+                boardCopy[initialPiecePosition].Piece = boardCopy[move].Piece;
+                boardCopy[initialPiecePosition].Piece.Row = boardCopy[initialPiecePosition].Row;
+                boardCopy[initialPiecePosition].Piece.Column = boardCopy[initialPiecePosition].Column;
+                boardCopy[move].Piece = null; // vracanje pozicija
+            }
+
+            return retVal;
+        }
     }
 }

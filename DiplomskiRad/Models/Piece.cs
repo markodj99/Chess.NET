@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using DiplomskiRad.Helper;
+using System.Data.Common;
+using System.Xml.Linq;
 
 namespace DiplomskiRad.Models
 {
@@ -24,6 +26,16 @@ namespace DiplomskiRad.Models
             this.Column = column;
         }
 
+        public Piece(Piece other)
+        {
+            this.Name = other.Name;
+            this.Value = other.Value;
+            this.Color = other.Color;
+            this.Type = other.Type;
+            this.Row = other.Row;
+            this.Column = other.Column;
+        }
+
         public virtual List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board) => new(0);
 
         public override bool Equals(object? obj)
@@ -32,48 +44,5 @@ namespace DiplomskiRad.Models
             var other = (Piece)obj;
             return Name.Equals(other.Name) && Value == other.Value && Color.Equals(other.Color);
         }
-
-        public bool IsKingInCheck(List<ushort> moves, List<ChessSquare> board, ChessSquare chessSquare, Color playerColor)
-        {
-            var retVal = new List<ushort>(moves.Count);
-
-            var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(chessSquare.Row, chessSquare.Column)];
-            foreach (var move in moves)
-            {
-                board[move] = board[initialPiecePosition];
-
-                ChessSquare kingSquare;
-                foreach (var piece in board.Where(piece => piece.Piece.Type == PieceType.King && piece.Color.Equals(playerColor.ToString()))) { kingSquare = piece; break;}
-
-                foreach (var piece in board)
-                {
-                    if (!piece.Color.Equals(playerColor.ToString()) && piece.Piece != null)
-                    {
-                        var pieceMoves = piece.Piece.GetPossibleMoves(piece, board);
-                        if (!pieceMoves.Contains(move))
-                        {
-                            retVal.Add(move);
-                        }
-
-                        //piece.Piece.Type switch
-                        //{
-                        //    PieceType.King => 
-                        //    PieceType.Queen => new Queen(Color.White, coordinates.Key, coordinates.Value),
-                        //    PieceType.Rook => new Rook(Color.White, coordinates.Key, coordinates.Value),
-                        //    PieceType.Bishop => new Bishop(Color.White, coordinates.Key, coordinates.Value),
-                        //    PieceType.Knight => new Knight(Color.White, coordinates.Key, coordinates.Value),
-                        //    PieceType.Pawn => new Pawn(Color.White, coordinates.Key, coordinates.Value),
-                        //    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
-                        //};
-                    }
-                }
-
-            }
-
-            return true;
-        }
-
-
-
     }
 }

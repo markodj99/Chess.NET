@@ -7,7 +7,7 @@ namespace DiplomskiRad.Models
 {
     public class Pawn : Piece
     {
-        public bool IsFirstMove {get; set; }
+        public bool IsFirstMove { get; set; }
 
         public Pawn(Color color, int row, int column) : base("Pawn", 1, color, PieceType.Pawn, row, column) => IsFirstMove = true;
 
@@ -28,17 +28,6 @@ namespace DiplomskiRad.Models
             else if (board[allPossibleAdvances[0]].Piece == null) moves.Add(allPossibleAdvances[0]);
 
             moves.AddRange(GetAllPossibleCaptures().Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
-
-            IsKingInCheck(moves, board, chessSquare, Color);
-
-
-
-
-
-
-
-            //kasnije uradi za en passant i proveru za sah al ima do toga vremena
-
             return moves;
         }
 
