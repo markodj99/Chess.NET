@@ -149,8 +149,10 @@ namespace DiplomskiRad.ViewModels
                 new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
             LastMove.Add(Mapping.DoubleIndexToIndex[
                 new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
-            //SelectedSquare = null;
+            SelectedSquare = null;
             foreach (var move in LastMove) ChessSquares[move].Color = "Yellow";
+
+            NextMoveOrNextPuzzle();
         }
 
         private void UpdateAvailableMoves()
@@ -220,8 +222,6 @@ namespace DiplomskiRad.ViewModels
 
         private void PuzzleRush()
         {
-            SetUpBoard();
-
             SetUpPiecesPosition(Puzzles[OrdinalNumber].WhitePos, Color.White);
             SetUpPiecesPosition(Puzzles[OrdinalNumber].BlackPos, Color.Black);
 
@@ -271,44 +271,41 @@ namespace DiplomskiRad.ViewModels
 
         private void SetUpNextPuzzleMove()
         {
+            var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
+            if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
+            {
+                // nije dobar potez izabrao
+                return;
+            }
 
-            //var condition = false;
+            var moves = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber + 1].Split("-");
 
-            //if (SelectedMove == Mapping.CoordinateToIndex[Puzzles[OrdinalNumber].MoveOrder[MoveOrder].Substring(3)])
+            ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Piece = ChessSquares[Mapping.CoordinateToIndex[moves[0]]].Piece;
+            ChessSquares[Mapping.CoordinateToIndex[moves[1]]].ImagePath = ChessSquares[Mapping.CoordinateToIndex[moves[0]]].ImagePath;
+            ChessSquares[Mapping.CoordinateToIndex[moves[0]]].ImagePath = null;
+            ChessSquares[Mapping.CoordinateToIndex[moves[0]]].Piece = null;
 
+            foreach (var move in LastMove) ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+            LastMove.Clear();
 
-            //if (Puzzles[OrdinalNumber].MoveOrder.Count > OrdinalMoveNumber)
-            //{
-            //    var moves = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber + 1].Split("-");
+            LastMove.Add(Mapping.CoordinateToIndex[moves[0]]);
+            LastMove.Add(Mapping.CoordinateToIndex[moves[1]]);
 
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Piece = ChessSquares[Mapping.CoordinateToIndex[moves[0]]].Piece;
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[1]]].ImagePath = ChessSquares[Mapping.CoordinateToIndex[moves[0]]].ImagePath;
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Piece.Row = ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Row;
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Piece.Column = ChessSquares[Mapping.CoordinateToIndex[moves[1]]].Column;
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[0]]].ImagePath = null;
-            //    ChessSquares[Mapping.CoordinateToIndex[moves[0]]].Piece = null;
+            foreach (var move in LastMove) ChessSquares[move].Color = "Yellow";
+            
+            OrdinalMoveNumber++;
+        }
 
-
-            //    foreach (var move in LastMove) ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
-            //    LastMove.Clear();
-
-            //    LastMove.Add(Mapping.CoordinateToIndex[moves[0]]);
-            //    LastMove.Add(Mapping.CoordinateToIndex[moves[1]]);
-
-            //    foreach (var move in LastMove)
-            //    {
-            //        ChessSquares[move].Color = "Yellow";
-            //    }
-
-            //    OrdinalMoveNumber++;
-
-
-
-            //}
-            //else
-            //{
-
-            //}
+        private void NextMoveOrNextPuzzle()
+        {
+            if (OrdinalMoveNumber >= Puzzles[OrdinalNumber].MoveOrder.Count)
+            {
+                //next puzzle
+            }
+            else
+            {
+                SetUpNextPuzzleMove();
+            }
         }
 
         #endregion
