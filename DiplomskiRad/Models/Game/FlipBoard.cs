@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DiplomskiRad.Models
+namespace DiplomskiRad.Models.Game
 {
     public class FlipBoard : INotifyPropertyChanged
     {

@@ -1,5 +1,5 @@
-﻿using DiplomskiRad.Models;
-using DiplomskiRad.Models.Enums;
+﻿using DiplomskiRad.Models.Enums;
+using DiplomskiRad.Models.Game;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;

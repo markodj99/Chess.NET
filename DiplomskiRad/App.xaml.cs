@@ -16,9 +16,12 @@ namespace DiplomskiRad
 
             var colorSelectionViewModel = new ColorSelectionViewModel(colorSelectionStore);
             var engineStrengthViewModel = new EngineStrengthViewModel(engineStrengthStore);
-            var chessBoardViewModel = new ChessBoardViewModel();
+            var chessBoardPuzzleViewModel = new ChessBoardPuzzleViewModel();
+            var chessBoardGameViewModel = new ChessBoardGameViewModel();
 
-            var mainViewModel = new MainWindowViewModel(colorSelectionStore, engineStrengthStore, colorSelectionViewModel, chessBoardViewModel, engineStrengthViewModel);
+            var mainViewModel = 
+                new MainWindowViewModel(colorSelectionViewModel, engineStrengthViewModel, chessBoardPuzzleViewModel, chessBoardGameViewModel,
+                    colorSelectionStore, engineStrengthStore);
 
             MainWindow = new MainWindow()
             {

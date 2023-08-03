@@ -15,8 +15,11 @@
         <DataTemplate DataType="{x:Type viewModels:EngineStrengthViewModel}">
             <views:EngineStrengthView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:ChessBoardViewModel}">
-            <views:ChessBoardView />
+        <DataTemplate DataType="{x:Type viewModels:ChessBoardGameViewModel}">
+            <views:ChessBoardGameView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ChessBoardPuzzleViewModel}">
+            <views:ChessBoardPuzzleView />
         </DataTemplate>
     </Window.Resources>
     <Grid Background="#423936">

@@ -3,11 +3,11 @@
 namespace DiplomskiRad.Views
 {
     /// <summary>
-    /// Interaction logic for ChessBoard.xaml
+    /// Interaction logic for ChessBoardPuzzleView.xaml
     /// </summary>
-    public partial class ChessBoardView : UserControl
+    public partial class ChessBoardPuzzleView : UserControl
     {
-        public ChessBoardView()
+        public ChessBoardPuzzleView()
         {
             InitializeComponent();
         }

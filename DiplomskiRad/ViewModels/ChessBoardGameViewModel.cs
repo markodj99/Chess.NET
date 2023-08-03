@@ -1,7 +1,9 @@
 ﻿using DiplomskiRad.Commands;
 using DiplomskiRad.Helper;
-using DiplomskiRad.Models;
 using DiplomskiRad.Models.Enums;
+using DiplomskiRad.Models.Game;
+using DiplomskiRad.Models.Pieces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -10,14 +12,12 @@ using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
 {
-    public class ChessBoardViewModel : ViewModelBase
+    public class ChessBoardGameViewModel : ViewModelBase
     {
         public Color PlayerColor { get; set; }
         public int EngineStrength { get; set; }
         public FlipBoard FlipBoard {get; set; }
-
         public List<ushort> LastMove { get; set; } = new List<ushort>(2);
-
 
         #region BooardSetUp
 
@@ -35,7 +35,7 @@ namespace DiplomskiRad.ViewModels
             { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" }
         };
 
-        public ChessBoardViewModel()
+        public ChessBoardGameViewModel()
         {
             FlipBoard = new FlipBoard();
 
@@ -44,52 +44,12 @@ namespace DiplomskiRad.ViewModels
 
             HighlightedSquares = new List<ushort>();
             ChessSquares = new ObservableCollection<ChessSquare>();
-            Puzzles = new List<ChessPuzzle>();
         }
 
-        public void BoardSetUp(RatingEvaluation evaluation)
+        public void Start()
         {
-            if (evaluation == RatingEvaluation.UserSelected)
-            {
-                ChessSquares.Clear();
-                ChessSquares = SetUpBoard();
-                if (PlayerColor == Color.Black) FlipBoard.Flip();
-            }
-            else // puzzles
-            {
-                var chessSquares = new ObservableCollection<ChessSquare>();
-                for (int row = 0; row < 8; row++)
-                {
-                    for (int column = 0; column < 8; column++)
-                    {
-                        var square = new ChessSquare
-                        {
-                            Row = row,
-                            Column = column,
-                            Color = (row + column) % 2 == 0 ? "#CCCCCC" : "#3a9cce" // oke boje za sad
-                        };
-
-                        chessSquares.Add(square);
-                    }
-                }
-                ChessSquares = chessSquares;
-
-                Puzzles = Parser.ParseFile();
-
-                //var currentDirectory = Directory.GetCurrentDirectory();
-                //var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
-
-                //ChessSquares[44] = new ChessSquare()
-                //{
-                //    Row = 5,
-                //    Column = 4,
-                //    Color = "#3a9cce",
-                //    Piece = new Bishop(Color.Black, 5, 4),
-                //    ImagePath = Path.Combine(targetFolder, "Bishop_B.png")
-                // };
-
-                PuzzleRush(2);
-            }
+            ChessSquares = SetUpBoard();
+            if (PlayerColor == Color.Black) FlipBoard.Flip();
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
@@ -122,12 +82,12 @@ namespace DiplomskiRad.ViewModels
                         };
                         Piece piece = pieceName switch
                         {
-                            "Pawn" => new Pawn(color, row, column),
-                            "Rook" => new Rook(color, row, column),
-                            "Knight" => new Knight(color, row, column),
-                            "Bishop" => new Bishop(color, row, column),
-                            "Queen" => new Queen(color, row, column),
-                            _ => new King(color, row, column)
+                            "Pawn" => new Pawn(color),
+                            "Rook" => new Rook(color),
+                            "Knight" => new Knight(color),
+                            "Bishop" => new Bishop(color),
+                            "Queen" => new Queen(color),
+                            _ => new King(color)
                         };
 
                         var imagePath = Path.Combine(targetFolder, $"{pieceName}_{c}.png");
@@ -144,71 +104,6 @@ namespace DiplomskiRad.ViewModels
         }
 
         #endregion
-
-        #region Puzzles
-
-        public List<ChessPuzzle> Puzzles { get; set; }
-
-        private void PuzzleRush(int ordinalNumber)
-        {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
-            foreach (var wPos in Puzzles[ordinalNumber].WhitePos)
-            {
-                var coordinates = Mapping.CoordinateToDoubleIndex[wPos.Substring(1)];
-                var piece = wPos[0] switch
-                {
-                    'K' => new King(Color.White, coordinates.Key, coordinates.Value),
-                    'Q' => new Queen(Color.White, coordinates.Key, coordinates.Value),
-                    'R' => new Rook(Color.White, coordinates.Key, coordinates.Value),
-                    'B' => new Bishop(Color.White, coordinates.Key, coordinates.Value),
-                    'N' => new Knight(Color.White, coordinates.Key, coordinates.Value),
-                    'P' => new Pawn(Color.White, coordinates.Key, coordinates.Value),
-                    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
-                };
-                ChessSquares[Mapping.CoordinateToIndex[wPos.Substring(1)]].Piece = piece;
-                ChessSquares[Mapping.CoordinateToIndex[wPos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_W.png");
-            }
-
-            foreach (var bPos in Puzzles[ordinalNumber].BlackPos)
-            {
-                var coordinates = Mapping.CoordinateToDoubleIndex[bPos.Substring(1)];
-                var piece = bPos[0] switch
-                {
-                    'K' => new King(Color.Black, coordinates.Key, coordinates.Value),
-                    'Q' => new Queen(Color.Black, coordinates.Key, coordinates.Value),
-                    'R' => new Rook(Color.Black, coordinates.Key, coordinates.Value),
-                    'B' => new Bishop(Color.Black, coordinates.Key, coordinates.Value),
-                    'N' => new Knight(Color.Black, coordinates.Key, coordinates.Value),
-                    'P' => new Pawn(Color.Black, coordinates.Key, coordinates.Value),
-                    _ => new Piece("ime", 4, Color.Black, PieceType.Bishop, 0, 0),
-                };
-                ChessSquares[Mapping.CoordinateToIndex[bPos.Substring(1)]].Piece = piece;
-                ChessSquares[Mapping.CoordinateToIndex[bPos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_B.png");
-            }
-
-
-            var firstMove = Puzzles[ordinalNumber].MoveOrder[0].Split("-");
-
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece = ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].Piece;
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].ImagePath = ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].ImagePath;
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece.Row = ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Row;
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece.Column = ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Column;
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].ImagePath = null;
-            ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].Piece = null;
-            //if (Puzzles[ordinalNumber].FirstMove == Color.White) FlipBoard.Flip();
-        }
-
-        private void SetUpPuzzle()
-        {
-
-        }
-
-        #endregion
-
-
-
-
 
         #region MovingLogic
 
@@ -227,9 +122,20 @@ namespace DiplomskiRad.ViewModels
             }
         }
 
+        public int OrdinalNumber { get; set; } = 0;
+
         private bool CanExecuteClickCommand(object parameter)
         {
             var selectedSquare = parameter as ChessSquare;
+
+            if (selectedSquare.Piece != null)
+            {
+                if (selectedSquare.Piece.Color != PlayerColor)
+                {
+                    return false;
+                }
+            }
+
             if (selectedSquare?.ImagePath == null) return false;
             return SelectedSquare is null || SelectedSquare.Equals(selectedSquare);
         }
@@ -252,17 +158,62 @@ namespace DiplomskiRad.ViewModels
                 foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
                 HighlightedSquares.Clear();
                 SelectedSquare = null;
+                foreach (var move in LastMove)
+                {
+                    ChessSquares[move].Color = "Yellow";
+                }
             }
         }
 
+        public ushort SelectedMove { get; set; } = 0;
+
         private bool CanExecuteMoveCommand(object parameter)
         {
+            var selectedSquare = parameter as ChessSquare;
+            SelectedMove = Mapping.DoubleIndexToIndex[
+                new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)];
+            if (SelectedSquare != null && !SelectedSquare.Equals(selectedSquare) && HighlightedSquares.Contains(SelectedMove)) return true;
+
             return false;
         }
 
+        public int MoveOrder { get; set; } = 0;
+
         private void ExecuteMoveCommand(object parameter)
         {
+            var selectedSquare = parameter as ChessSquare;
 
+
+            ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
+            ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
+
+            ChessSquares[
+                    Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                .Piece = null;
+            ChessSquares[
+                    Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                .ImagePath = null;
+
+            foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+            HighlightedSquares.Clear();
+
+            foreach (var move in LastMove)
+            {
+                ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+            }
+            LastMove.Clear();
+
+            LastMove.Add(Mapping.DoubleIndexToIndex[
+                new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+            LastMove.Add(Mapping.DoubleIndexToIndex[
+                new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+            SelectedSquare = null;
+
+            foreach (var move in LastMove)
+            {
+                ChessSquares[move].Color = "Yellow";
+            }
         }
 
         private void UpdateAvailableMoves()
@@ -291,8 +242,6 @@ namespace DiplomskiRad.ViewModels
                 }
 
                 boardCopy[move].Piece = boardCopy[initialPiecePosition].Piece;
-                boardCopy[move].Piece.Row = boardCopy[move].Row;
-                boardCopy[move].Piece.Column = boardCopy[move].Column;
                 boardCopy[initialPiecePosition].Piece = null; // zamena pozicija
 
                 ushort kingPos = 100;
@@ -324,8 +273,6 @@ namespace DiplomskiRad.ViewModels
                 }
 
                 boardCopy[initialPiecePosition].Piece = boardCopy[move].Piece;
-                boardCopy[initialPiecePosition].Piece.Row = boardCopy[initialPiecePosition].Row;
-                boardCopy[initialPiecePosition].Piece.Column = boardCopy[initialPiecePosition].Column;
                 boardCopy[move].Piece = null; // vracanje pozicija
             }
 

@@ -1,7 +1,7 @@
 ﻿using DiplomskiRad.Models.Enums;
 using System.Collections.Generic;
 
-namespace DiplomskiRad.Models
+namespace DiplomskiRad.Models.Game
 {
     public class ChessPuzzle
     {

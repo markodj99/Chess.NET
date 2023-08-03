@@ -14,20 +14,23 @@ namespace DiplomskiRad.ViewModels
         }
         private ColorSelectionViewModel _colorSelectionViewModel;
         private EngineStrengthViewModel _engineStrengthViewModel;
-        private ChessBoardViewModel _chessBoardViewModel;
+        private ChessBoardPuzzleViewModel _chessBoardPuzzleViewModel;
+        private ChessBoardGameViewModel _chessBoardGameViewModel;
 
         private readonly ColorSelectionStore _colorSelectionStore;
         private readonly EngineStrengthStore _engineStrengthStore;
 
-        public MainWindowViewModel(ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore, ColorSelectionViewModel colorSelectionViewModel,
-            ChessBoardViewModel chessBoardViewModel, EngineStrengthViewModel engineStrengthViewModel)
+        public MainWindowViewModel(ColorSelectionViewModel colorSelectionViewModel, EngineStrengthViewModel engineStrengthViewModel,
+            ChessBoardPuzzleViewModel chessBoardPuzzleViewModel, ChessBoardGameViewModel chessBoardGameViewModel,
+            ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore)
         {
             _colorSelectionStore = colorSelectionStore;
             _engineStrengthStore = engineStrengthStore;
 
             _colorSelectionViewModel = colorSelectionViewModel;
             _engineStrengthViewModel = engineStrengthViewModel;
-            _chessBoardViewModel = chessBoardViewModel;
+            _chessBoardPuzzleViewModel = chessBoardPuzzleViewModel;
+            _chessBoardGameViewModel = chessBoardGameViewModel;
 
             _colorSelectionStore.ColorSelected += ColorSelected;
             _engineStrengthStore.StrengthSelected += StrengthSelected;
@@ -37,15 +40,23 @@ namespace DiplomskiRad.ViewModels
 
         private void ColorSelected(Color color )
         {
-            _chessBoardViewModel.PlayerColor = color;
+            _chessBoardGameViewModel.PlayerColor = color;
             CurrentViewModel = _engineStrengthViewModel;
         }
 
         private void StrengthSelected(int selectedStrength, RatingEvaluation evaluation)
         {
-            _chessBoardViewModel.EngineStrength = selectedStrength;
-            _chessBoardViewModel.BoardSetUp(evaluation);
-            CurrentViewModel = _chessBoardViewModel;
+            if (evaluation == RatingEvaluation.AutoCalculated)
+            {
+                _chessBoardPuzzleViewModel.Start();
+                CurrentViewModel = _chessBoardPuzzleViewModel;
+            }
+            else
+            {
+                _chessBoardGameViewModel.EngineStrength = selectedStrength;
+                _chessBoardGameViewModel.Start();
+                CurrentViewModel = _chessBoardGameViewModel;
+            }
         }
 
         public override void Dispose()

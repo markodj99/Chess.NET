@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using DiplomskiRad.Models.Pieces;
 
-namespace DiplomskiRad.Models
+namespace DiplomskiRad.Models.Game
 {
     public class ChessSquare : INotifyPropertyChanged
     {
@@ -10,7 +11,7 @@ namespace DiplomskiRad.Models
         private string _color;
         public string Color
         {
-            get => _color; 
+            get => _color;
             set
             {
                 if (_color == value) return;
@@ -33,11 +34,11 @@ namespace DiplomskiRad.Models
 
         public ChessSquare(ChessSquare other)
         {
-            this.Row = other.Row;
-            this.Column = other.Column;
-            this.Color = other.Color;
-            this.Piece = other.Piece;
-            this.ImagePath = other.ImagePath;
+            Row = other.Row;
+            Column = other.Column;
+            Color = other.Color;
+            Piece = other.Piece;
+            ImagePath = other.ImagePath;
         }
 
         public ChessSquare() { }

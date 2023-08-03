@@ -4,36 +4,31 @@ using System.Linq;
 using DiplomskiRad.Helper;
 using System.Data.Common;
 using System.Xml.Linq;
+using DiplomskiRad.Models.Game;
 
-namespace DiplomskiRad.Models
+namespace DiplomskiRad.Models.Pieces
 {
     public class Piece
     {
         public string Name { get; }
-        public PieceType Type { get;}
+        public PieceType Type { get; }
         public ushort Value { get; }
         public Color Color { get; }
-        public int Row { get; set; }
-        public int Column { get; set; }
 
-        public Piece(string name, ushort value, Color color, PieceType type, int row, int column)
+        public Piece(string name, ushort value, Color color, PieceType type)
         {
-            this.Name = name;
-            this.Value = value;
-            this.Color = color;
-            this.Type = type;
-            this.Row = row;
-            this.Column = column;
+            Name = name;
+            Value = value;
+            Color = color;
+            Type = type;
         }
 
         public Piece(Piece other)
         {
-            this.Name = other.Name;
-            this.Value = other.Value;
-            this.Color = other.Color;
-            this.Type = other.Type;
-            this.Row = other.Row;
-            this.Column = other.Column;
+            Name = other.Name;
+            Value = other.Value;
+            Color = other.Color;
+            Type = other.Type;
         }
 
         public virtual List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board) => new(0);
