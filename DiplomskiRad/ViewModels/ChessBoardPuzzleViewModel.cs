@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using DiplomskiRad.Models.Pieces;
 
@@ -49,7 +51,9 @@ namespace DiplomskiRad.ViewModels
                     {
                         Row = row,
                         Column = column,
-                        Color = (row + column) % 2 == 0 ? "#CCCCCC" : "#3a9cce" // oke boje za sad
+                        Color = (row + column) % 2 == 0 ? "#CCCCCC" : "#3a9cce", // oke boje za sad
+                        Piece = null,
+                        ImagePath = null
                     };
 
                     chessSquares.Add(square);
@@ -152,7 +156,7 @@ namespace DiplomskiRad.ViewModels
             SelectedSquare = null;
             foreach (var move in LastMove) ChessSquares[move].Color = "Yellow";
 
-            NextMoveOrNextPuzzle();
+             NextMoveOrNextPuzzle();
         }
 
         private void UpdateAvailableMoves()
@@ -241,7 +245,9 @@ namespace DiplomskiRad.ViewModels
             
             OrdinalMoveNumber = 1;
 
-            if (Puzzles[OrdinalNumber].FirstMove == Color.White) FlipBoard.Flip();
+            FlipBoard.Orientation = Puzzles[OrdinalNumber].FirstMove == Color.White ? Color.Black : Color.White;
+
+            //if (Puzzles[OrdinalNumber].FirstMove == Color.White) FlipBoard.Flip();
         }
 
         private void SetUpPiecesPosition(List<string> positions, Color color)
@@ -293,14 +299,21 @@ namespace DiplomskiRad.ViewModels
 
             foreach (var move in LastMove) ChessSquares[move].Color = "Yellow";
             
-            OrdinalMoveNumber++;
+            OrdinalMoveNumber += 2;
         }
 
         private void NextMoveOrNextPuzzle()
         {
-            if (OrdinalMoveNumber >= Puzzles[OrdinalNumber].MoveOrder.Count)
+            if ((OrdinalMoveNumber + 1) >= Puzzles[OrdinalNumber].MoveOrder.Count)
             {
                 //next puzzle
+                OrdinalNumber++;
+                foreach (var chessSquare in ChessSquares)
+                {
+                    chessSquare.Piece = null;
+                    chessSquare.ImagePath = null;
+                }
+                PuzzleRush();
             }
             else
             {

@@ -1,9 +1,25 @@
-﻿using System.ComponentModel;
+﻿using DiplomskiRad.Models.Enums;
+using System.ComponentModel;
 
 namespace DiplomskiRad.Models.Game
 {
     public class FlipBoard : INotifyPropertyChanged
     {
+        private Color _oriantation;
+
+        public Color Orientation
+        {
+            get => _oriantation;
+            set
+            {
+                if (value != _oriantation)
+                {
+                    Flip();
+                    _oriantation = value;
+                }
+            }
+        }
+
         private double _scaleX;
         public double ScaleX
         {
@@ -29,6 +45,7 @@ namespace DiplomskiRad.Models.Game
 
         public FlipBoard()
         {
+            Orientation = Color.White;
             ScaleX = 1f;
             ScaleY = 1f;
         }
