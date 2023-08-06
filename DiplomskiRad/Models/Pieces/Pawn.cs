@@ -11,7 +11,7 @@ namespace DiplomskiRad.Models.Pieces
     {
         public bool IsFirstMove { get; set; }
 
-        public Pawn(Color color) : base("Pawn", 1, color, PieceType.Pawn) => IsFirstMove = true;
+        public Pawn(Color color, bool isFirstMove) : base("Pawn", 1, color, PieceType.Pawn) => IsFirstMove = isFirstMove;
 
         public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
         {

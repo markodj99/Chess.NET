@@ -82,7 +82,7 @@ namespace DiplomskiRad.ViewModels
                         };
                         Piece piece = pieceName switch
                         {
-                            "Pawn" => new Pawn(color),
+                            "Pawn" => new Pawn(color, true),
                             "Rook" => new Rook(color),
                             "Knight" => new Knight(color),
                             "Bishop" => new Bishop(color),

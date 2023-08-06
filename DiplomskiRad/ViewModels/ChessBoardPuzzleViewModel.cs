@@ -150,7 +150,7 @@ namespace DiplomskiRad.ViewModels
             LastMove.Clear();
 
             LastMove.Add(Mapping.DoubleIndexToIndex[
-                new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
             LastMove.Add(Mapping.DoubleIndexToIndex[
                 new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
             SelectedSquare = null;
@@ -246,8 +246,6 @@ namespace DiplomskiRad.ViewModels
             OrdinalMoveNumber = 1;
 
             FlipBoard.Orientation = Puzzles[OrdinalNumber].FirstMove == Color.White ? Color.Black : Color.White;
-
-            //if (Puzzles[OrdinalNumber].FirstMove == Color.White) FlipBoard.Flip();
         }
 
         private void SetUpPiecesPosition(List<string> positions, Color color)
@@ -259,17 +257,35 @@ namespace DiplomskiRad.ViewModels
 
             foreach (var pos in positions)
             {
-                var coordinates = Mapping.CoordinateToDoubleIndex[pos.Substring(1)];
-                var piece = pos[0] switch
+                Piece? piece;
+                switch (pos[0])
                 {
-                    'K' => new King(color),
-                    'Q' => new Queen(color),
-                    'R' => new Rook(color),
-                    'B' => new Bishop(color),
-                    'N' => new Knight(color),
-                    'P' => new Pawn(color),
-                    _ => new Piece("ime", 4, color, PieceType.Bishop),
-                };
+                    case 'K':
+                        piece = new King(color);
+                        break;
+                    case 'Q':
+                        piece = new Queen(color);
+                        break;
+                    case 'R':
+                        piece = new Rook(color);
+                        break;
+                    case 'B':
+                        piece = new Bishop(color);
+                        break;
+                    case 'N':
+                        piece = new Knight(color);
+                        break;
+                    case 'P':
+                        bool isfirstMove = false;
+                        if (color == Color.Black && Mapping.CoordinateToDoubleIndex[pos.Substring(1)].Key == 1) isfirstMove = true;
+                        if (color == Color.White && Mapping.CoordinateToDoubleIndex[pos.Substring(1)].Key == 6) isfirstMove = true;
+                        piece = new Pawn(color, isfirstMove);
+                        break;
+                    default:
+                        piece = new Piece("ime", 4, color, PieceType.Bishop);
+                        break;
+                }
+
                 ChessSquares[Mapping.CoordinateToIndex[pos.Substring(1)]].Piece = piece;
                 ChessSquares[Mapping.CoordinateToIndex[pos.Substring(1)]].ImagePath = Path.Combine(targetFolder, $"{piece.Name}_{imageColor}.png");
             }
