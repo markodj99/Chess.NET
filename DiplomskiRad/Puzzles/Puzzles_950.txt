@@ -1,0 +1,3 @@
+﻿[Kh1, Qd3, Rg1, Be6, Pa2, Pb2, Pc2, Pe4, Pg2, Ph4]_[Kh6, Qf2, Rf4, Ph7, Pg3, Pc6, Pa6, Pb5]_[W]_[d3-d1, f4-h4, e6-h3, h4-h3, g2-h3, f2-h2]_[https://www.chess.com/puzzles/problem/1492860]
+[Kh1, Qd1, Rf1, Rb1, Bb3, Pa3, Pc2, Pg2, Ph2]_[Kg8, Qc5, Rf8, Ra8, Bb7, Pa6, Pb5, Pd6, Pf7, Pf6, Ph7]_[W]_[f1-f6, b7-g2, h1-g2, c5-g5, g2-h3, g5-f6]_[https://www.chess.com/puzzles/problem/1143828]
+[Ke2, Qa4, Ra1, Rh1, Bf1, Be3, Ng1, Ph2, Pf3, Pg2, Pe5, Pd4, Pb2, Pa2]_[Ke8, Qd5, Rh8, Ra8, Bc8, Bb4, Nc6, Pa7, Pb7, Pc7, Ph7, Pg7, Pf7]_[W]_[a2-a3, d5-c4, e2-f2, b4-e1, a1-e1, c4-a4]_[https://www.chess.com/puzzles/problem/1035024]
