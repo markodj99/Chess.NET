@@ -134,6 +134,8 @@ namespace DiplomskiRad.ViewModels
             ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
             ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
 
+            if (ChessSquares[SelectedMove].Piece is Pawn) ((Pawn)(ChessSquares[SelectedMove].Piece)).IsFirstMove = false;
+
             ChessSquares[
                     Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
                 .Piece = null;

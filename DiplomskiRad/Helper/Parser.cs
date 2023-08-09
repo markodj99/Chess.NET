@@ -13,7 +13,7 @@ namespace DiplomskiRad.Helper
             var retVal = new List<ChessPuzzle>();
 
             var currentDirectory = Directory.GetCurrentDirectory();
-            var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Puzzles");
+            var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Puzzles", "Rating_1000_2000");
             var filepath = Path.Combine(targetFolder, "Puzzles_2000.txt");
 
             using (var reader = new StreamReader(filepath))
