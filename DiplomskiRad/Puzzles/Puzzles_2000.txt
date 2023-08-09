@@ -1,3 +1,3 @@
-﻿[]_[]_[]_[]_[]
-[]_[]_[]_[]_[]
-[]_[]_[]_[]_[]
+﻿[Kh1, Qf3, Rd1, Ne6, Pa2, Pb2, Pc3, Pf5, Ph2, Ph2]_[Kg8, Qe5, Rh8, Nd5, Pg7, Ph5, Pf6, Pc4, Pb5, Pa6]_[B]_[d5-e7, d1-d8, g8-f7, f3-h5, g7-g6, h5-h7, h8-h7, d1-f1]_[https://www.chess.com/puzzles/problem/562024]
+[Kh1, Qc3, Rd1, Re1, Ph2, Pg2, Pa3, Pd4, Pc5]_[Kg8, Qb5, Re8, Rd5, Ph7, Pg7, Pf7, Pc6, Pa6]_[B]_[e8-d8, d1-b1, b5-a4, b1-b4, a4-a5, b4-b8, a5-c3, e1-e8, d8-e8, b8-e8]_[https://www.chess.com/puzzles/problem/42533]
+[Kg2, Ra6, Pb4, Ph6]_[Kh4, Re5, Pg4, Pb5]_[B]_[g4-g3, h6-h7, e5-h5, a6-a1, h5-h7, a1-h1, h4-g5, h1-h7]_[https://www.chess.com/puzzles/problem/466751]
