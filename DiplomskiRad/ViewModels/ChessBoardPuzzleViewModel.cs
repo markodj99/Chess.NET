@@ -235,6 +235,7 @@ namespace DiplomskiRad.ViewModels
             ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].ImagePath = null;
             ChessSquares[Mapping.CoordinateToIndex[firstMove[0]]].Piece = null;
 
+            if (ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece is Pawn) ((Pawn)(ChessSquares[Mapping.CoordinateToIndex[firstMove[1]]].Piece)).IsFirstMove = false;
 
             foreach (var move in LastMove) ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
             LastMove.Clear();
