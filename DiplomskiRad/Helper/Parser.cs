@@ -14,7 +14,7 @@ namespace DiplomskiRad.Helper
 
             var currentDirectory = Directory.GetCurrentDirectory();
             var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Puzzles", "Rating_2050_2800");
-            var filepath = Path.Combine(targetFolder, "Puzzles_2150.txt");
+            var filepath = Path.Combine(targetFolder, "Puzzles_2200.txt");
 
             using (var reader = new StreamReader(filepath))
             {
