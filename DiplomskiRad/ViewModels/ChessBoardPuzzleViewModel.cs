@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
@@ -323,6 +324,19 @@ namespace DiplomskiRad.ViewModels
         {
             if ((OrdinalMoveNumber + 1) >= Puzzles[OrdinalNumber].MoveOrder.Count)
             {
+                var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
+                if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
+                {
+                    // nije dobar potez izabrao
+                    //return;
+                    MessageBox.Show("Lose");
+                }
+                else
+                {
+                    MessageBox.Show("Dobro");
+                }
+
+
                 //next puzzle
                 OrdinalNumber++;
                 foreach (var chessSquare in ChessSquares)
