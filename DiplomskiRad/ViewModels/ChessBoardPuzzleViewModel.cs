@@ -298,7 +298,8 @@ namespace DiplomskiRad.ViewModels
             var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
             if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
             {
-                // nije dobar potez izabrao
+                ErrorCount++;
+                PuzzleRush();
                 return;
             }
 
@@ -320,6 +321,8 @@ namespace DiplomskiRad.ViewModels
             OrdinalMoveNumber += 2;
         }
 
+        public int ErrorCount { get; set; } = 0;
+
         private void NextMoveOrNextPuzzle()
         {
             if ((OrdinalMoveNumber + 1) >= Puzzles[OrdinalNumber].MoveOrder.Count)
@@ -327,8 +330,8 @@ namespace DiplomskiRad.ViewModels
                 var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
                 if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
                 {
-                    // nije dobar potez izabrao
-                    //return;
+                    ErrorCount++;
+                    PuzzleRush();
                     MessageBox.Show("Lose");
                 }
                 else
