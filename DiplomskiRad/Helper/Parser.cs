@@ -1,4 +1,5 @@
-﻿using DiplomskiRad.Models.Enums;
+﻿using System;
+using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Models.Game;
 using System.Collections.Generic;
 using System.IO;
@@ -27,12 +28,14 @@ namespace DiplomskiRad.Helper
 
         private static List<ChessPuzzle> GetPuzzleFromFolder(string folderPath)
         {
+            var random = new Random();
             var retVal = new List<ChessPuzzle>();
-
             string[] txtFiles = Directory.GetFiles(folderPath, "*.txt");
 
             foreach (var txtFile in txtFiles)
             {
+                var potentialThree = new List<ChessPuzzle>(3);
+
                 string filePath = Path.Combine(folderPath, txtFile);
                 using (var reader = new StreamReader(filePath))
                 {
@@ -55,9 +58,11 @@ namespace DiplomskiRad.Helper
                         mo = Regex.Replace(mo, @"[\[\]\s]", "");
                         var moveOrder = new List<string>(mo.Split(","));
 
-                        retVal.Add(new ChessPuzzle(allWpos, allBpos, color, moveOrder));
+                        potentialThree.Add(new ChessPuzzle(allWpos, allBpos, color, moveOrder));
                     }
                 }
+
+                retVal.Add(potentialThree[random.Next(0, 3)]);
             }
 
             return retVal;
