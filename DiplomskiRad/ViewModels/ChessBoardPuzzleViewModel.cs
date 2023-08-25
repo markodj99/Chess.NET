@@ -3,6 +3,7 @@ using DiplomskiRad.Helper;
 using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Models.Game;
 using DiplomskiRad.Models.Pieces;
+using DiplomskiRad.Stores;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -14,6 +15,8 @@ namespace DiplomskiRad.ViewModels
 {
     public class ChessBoardPuzzleViewModel : ViewModelBase
     {
+        private readonly EngineStrengthEvaluated _engineStrengthEvaluated;
+
         public FlipBoard FlipBoard { get; set; }
         public List<ushort> LastMove { get; set; }
         public List<ushort> HighlightedSquares { get; set; }
@@ -23,7 +26,7 @@ namespace DiplomskiRad.ViewModels
         public int OrdinalNumber { get; set; }
         public int OrdinalMoveNumber { get; set; }
 
-        public ChessBoardPuzzleViewModel()
+        public ChessBoardPuzzleViewModel(EngineStrengthEvaluated engineStrengthEvaluated)
         {
             FlipBoard = new FlipBoard();
             LastMove = new List<ushort>(2);
@@ -36,6 +39,8 @@ namespace DiplomskiRad.ViewModels
             Puzzles = new List<ChessPuzzle>();
             OrdinalNumber = 0;
             OrdinalMoveNumber = 0;
+
+            _engineStrengthEvaluated = engineStrengthEvaluated;
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
@@ -298,8 +303,21 @@ namespace DiplomskiRad.ViewModels
             var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
             if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
             {
-                ErrorCount++;
+                if (++ErrorCount == 3)
+                {
+                    MessageBox.Show($"{Rating}");
+                    _engineStrengthEvaluated.EvaulatedRating(Rating);
+                    return;
+                }
+
+                OrdinalNumber++;
+                foreach (var chessSquare in ChessSquares)
+                {
+                    chessSquare.Piece = null;
+                    chessSquare.ImagePath = null;
+                }
                 PuzzleRush();
+
                 return;
             }
 
@@ -322,6 +340,7 @@ namespace DiplomskiRad.ViewModels
         }
 
         public int ErrorCount { get; set; } = 0;
+        public int Rating { get; set; } = 250;
 
         private void NextMoveOrNextPuzzle()
         {
@@ -330,13 +349,16 @@ namespace DiplomskiRad.ViewModels
                 var previousMove = Puzzles[OrdinalNumber].MoveOrder[OrdinalMoveNumber].Split("-");
                 if (Mapping.CoordinateToIndex[previousMove[1]] != SelectedMove)
                 {
-                    ErrorCount++;
-                    PuzzleRush();
-                    MessageBox.Show("Lose");
+                    if (++ErrorCount == 3)
+                    {
+                        MessageBox.Show($"{Rating}");
+                        _engineStrengthEvaluated.EvaulatedRating(Rating);
+                        return;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Dobro");
+                    Rating += 50;
                 }
 
 

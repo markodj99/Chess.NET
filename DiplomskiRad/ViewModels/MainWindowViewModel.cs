@@ -19,13 +19,15 @@ namespace DiplomskiRad.ViewModels
 
         private readonly ColorSelectionStore _colorSelectionStore;
         private readonly EngineStrengthStore _engineStrengthStore;
+        private readonly EngineStrengthEvaluated _engineStrengthEvaluatedStore;
 
         public MainWindowViewModel(ColorSelectionViewModel colorSelectionViewModel, EngineStrengthViewModel engineStrengthViewModel,
             ChessBoardPuzzleViewModel chessBoardPuzzleViewModel, ChessBoardGameViewModel chessBoardGameViewModel,
-            ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore)
+            ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore, EngineStrengthEvaluated engineStrengthEvaluatedStore)
         {
             _colorSelectionStore = colorSelectionStore;
             _engineStrengthStore = engineStrengthStore;
+            _engineStrengthEvaluatedStore = engineStrengthEvaluatedStore;
 
             _colorSelectionViewModel = colorSelectionViewModel;
             _engineStrengthViewModel = engineStrengthViewModel;
@@ -34,11 +36,12 @@ namespace DiplomskiRad.ViewModels
 
             _colorSelectionStore.ColorSelected += ColorSelected;
             _engineStrengthStore.StrengthSelected += StrengthSelected;
+            _engineStrengthEvaluatedStore.RatingEvaluated += StrengthEvaluated;
 
             CurrentViewModel = _colorSelectionViewModel;
         }
 
-        private void ColorSelected(Color color )
+        private void ColorSelected(Color color)
         {
             _chessBoardGameViewModel.PlayerColor = color;
             CurrentViewModel = _engineStrengthViewModel;
@@ -59,10 +62,18 @@ namespace DiplomskiRad.ViewModels
             }
         }
 
+        private void StrengthEvaluated(int evaluatedStrength)
+        {
+            _chessBoardGameViewModel.EngineStrength = evaluatedStrength;
+            _chessBoardGameViewModel.Start();
+            CurrentViewModel = _chessBoardGameViewModel;
+        }
+
         public override void Dispose()
         {
             _colorSelectionStore.ColorSelected -= ColorSelected;
             _engineStrengthStore.StrengthSelected -= StrengthSelected;
+            _engineStrengthEvaluatedStore.RatingEvaluated -= StrengthEvaluated;
         }
     }
 }

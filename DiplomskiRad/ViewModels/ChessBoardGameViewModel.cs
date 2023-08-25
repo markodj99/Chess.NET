@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
@@ -48,6 +49,7 @@ namespace DiplomskiRad.ViewModels
 
         public void Start()
         {
+            MessageBox.Show(EngineStrength.ToString());
             ChessSquares = SetUpBoard();
             if (PlayerColor == Color.Black) FlipBoard.Flip();
         }
