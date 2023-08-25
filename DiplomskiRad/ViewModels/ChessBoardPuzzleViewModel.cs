@@ -157,7 +157,7 @@ namespace DiplomskiRad.ViewModels
             SelectedSquare = null;
             foreach (var move in LastMove) ChessSquares[move].Color = "Yellow";
 
-             NextMoveOrNextPuzzle();
+            NextMoveOrNextPuzzle();
         }
 
         private void UpdateAvailableMoves()
