@@ -7,7 +7,7 @@ namespace DiplomskiRad.ViewModels
 {
     public class EngineStrengthViewModel : ViewModelBase
     {
-        private int _selectedStrength = 1;
+        private int _selectedStrength = 250;
         public int SelectedStrength
         {
             get => _selectedStrength;
