@@ -8,7 +8,9 @@ namespace DiplomskiRad.Models.Pieces
 {
     public class Rook : Piece
     {
-        public Rook(Color color) : base("Rook", 5, color, PieceType.Rook) { }
+        public bool CastlingRight { get; set; }
+
+        public Rook(Color color, bool castlingRight) : base("Rook", 5, color, PieceType.Rook) => CastlingRight = castlingRight;
 
         public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
         {

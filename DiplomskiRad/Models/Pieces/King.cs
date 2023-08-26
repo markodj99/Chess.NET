@@ -9,7 +9,9 @@ namespace DiplomskiRad.Models.Pieces
 {
     public class King : Piece
     {
-        public King(Color color) : base("King", ushort.MaxValue, color, PieceType.King) { }
+        public bool CastlingRight { get; set; }
+
+        public King(Color color, bool castlingRight) : base("King", ushort.MaxValue, color, PieceType.King) => CastlingRight = castlingRight;
 
         public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
         {
@@ -18,10 +20,12 @@ namespace DiplomskiRad.Models.Pieces
 
             var allHorizontalsAndVerticals = GetAllHorizontalsAndVerticals(board, row, column);
             var allDiagonals = GetAllDiagonals(board, row, column);
+            var castleMoves = GetCastleSquares(board, chessSquare, row, column);
 
-            var allMoves = new List<KeyValuePair<int, int>>(allHorizontalsAndVerticals.Count + allDiagonals.Count);
+            var allMoves = new List<KeyValuePair<int, int>>(allHorizontalsAndVerticals.Count + allDiagonals.Count + castleMoves.Count);
             allMoves.AddRange(allHorizontalsAndVerticals);
             allMoves.AddRange(allDiagonals);
+            allMoves.AddRange(castleMoves);
 
             var moves = new List<ushort>(8);
             moves.AddRange(allMoves.Select(move => Mapping.DoubleIndexToIndex[move]));
@@ -97,6 +101,60 @@ namespace DiplomskiRad.Models.Pieces
                     allDiags.Add(new(row, column - 1));
 
             return allDiags;
+        }
+
+        private List<KeyValuePair<int, int>> GetCastleSquares(List<ChessSquare> board, ChessSquare chessSquare, int row, int column)
+        {
+            if (((King)chessSquare.Piece).CastlingRight)
+            {
+                var retVal = new List<KeyValuePair<int, int>>();
+
+                if (ShortCastle(board, chessSquare, row, column))
+                {
+                    retVal.Add(new KeyValuePair<int, int>(row, column + 2));
+                }
+
+                if (LongCastle(board, chessSquare, row, column))
+                {
+                    retVal.Add(new KeyValuePair<int, int>(row, column - 2));
+                }
+
+                return retVal;
+            }
+
+            return new List<KeyValuePair<int, int>>(0);
+        }
+
+        private bool ShortCastle(List<ChessSquare> board, ChessSquare chessSquare, int row, int column)
+        {
+            for (int i = 1; i < 3; i++)
+            {
+                if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + i)]].Piece != null) return false;
+            }
+
+            var piece = board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + 3)]].Piece;
+            return piece switch
+            {
+                null => false,
+                Rook r when r.CastlingRight && r.Color == chessSquare.Piece.Color => true,
+                _ => false
+            };
+        }
+
+        private bool LongCastle(List<ChessSquare> board, ChessSquare chessSquare, int row, int column)
+        {
+            for (int i = 1; i < 4; i++)
+            {
+                if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - i)]].Piece != null) return false;
+            }
+
+            var piece = board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - 4)]].Piece;
+            return piece switch
+            {
+                null => false,
+                Rook r when r.CastlingRight && r.Color == chessSquare.Piece.Color => true,
+                _ => false
+            };
         }
     }
 }

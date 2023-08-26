@@ -85,11 +85,11 @@ namespace DiplomskiRad.ViewModels
                         Piece piece = pieceName switch
                         {
                             "Pawn" => new Pawn(color, true),
-                            "Rook" => new Rook(color),
+                            "Rook" => new Rook(color, true),
                             "Knight" => new Knight(color),
                             "Bishop" => new Bishop(color),
                             "Queen" => new Queen(color),
-                            _ => new King(color)
+                            _ => new King(color, true)
                         };
 
                         var imagePath = Path.Combine(targetFolder, $"{pieceName}_{c}.png");
@@ -132,10 +132,10 @@ namespace DiplomskiRad.ViewModels
 
             if (selectedSquare.Piece != null)
             {
-                if (selectedSquare.Piece.Color != PlayerColor)
-                {
-                    return false;
-                }
+                //if (selectedSquare.Piece.Color != PlayerColor)
+                //{
+                //    return false;
+                //}
             }
 
             if (selectedSquare?.ImagePath == null) return false;
@@ -179,44 +179,147 @@ namespace DiplomskiRad.ViewModels
             return false;
         }
 
-        public int MoveOrder { get; set; } = 0;
-
         private void ExecuteMoveCommand(object parameter)
         {
             var selectedSquare = parameter as ChessSquare;
+            int selectedRow = SelectedSquare.Row, selectedColumn = SelectedSquare.Column;
+            int targetRow = selectedSquare.Row, targetColumn = selectedSquare.Column;
 
-            ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
-            ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
-
-            if (ChessSquares[SelectedMove].Piece is Pawn) ((Pawn)(ChessSquares[SelectedMove].Piece)).IsFirstMove = false;
-
-
-            ChessSquares[
-                    Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
-                .Piece = null;
-            ChessSquares[
-                    Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
-                .ImagePath = null;
-
-            foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
-            HighlightedSquares.Clear();
-
-            foreach (var move in LastMove)
+            if (SelectedSquare.Piece is King k && Math.Abs(targetColumn - selectedColumn) > 1) // rokada
             {
-                ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                k.CastlingRight = false;
+
+                if (targetColumn == 6) // mala rokada
+                {
+                    ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
+                    ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
+
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .Piece = null;
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .ImagePath = null;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 5)]].Piece =
+                        ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 7)]].Piece;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 5)]].ImagePath =
+                        ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 7)]].ImagePath;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 7)]].Piece =
+                        null;
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 7)]].ImagePath =
+                        null;
+
+                    ((Rook)ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 5)]].Piece)
+                        .CastlingRight = false;
+
+                    foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    HighlightedSquares.Clear();
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    }
+                    LastMove.Clear();
+
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+                    SelectedSquare = null;
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = "Yellow";
+                    }
+                }
+                else // velika rokada (targetColumn == 2)
+                {
+                    ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
+                    ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
+
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .Piece = null;
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .ImagePath = null;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 3)]].Piece =
+                        ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 0)]].Piece;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 3)]].ImagePath =
+                        ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 0)]].ImagePath;
+
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 0)]].Piece =
+                        null;
+                    ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 0)]].ImagePath =
+                        null;
+
+                    ((Rook)ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 3)]].Piece)
+                        .CastlingRight = false;
+
+                    foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    HighlightedSquares.Clear();
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    }
+                    LastMove.Clear();
+
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+                    SelectedSquare = null;
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = "Yellow";
+                    }
+                }
             }
-            LastMove.Clear();
-
-            LastMove.Add(Mapping.DoubleIndexToIndex[
-                new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
-            LastMove.Add(Mapping.DoubleIndexToIndex[
-                new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
-
-            SelectedSquare = null;
-
-            foreach (var move in LastMove)
+            else
             {
-                ChessSquares[move].Color = "Yellow";
+                ChessSquares[SelectedMove].Piece = SelectedSquare.Piece;
+                ChessSquares[SelectedMove].ImagePath = SelectedSquare.ImagePath;
+
+                if (ChessSquares[SelectedMove].Piece is Pawn) ((Pawn)(ChessSquares[SelectedMove].Piece)).IsFirstMove = false;
+                if (ChessSquares[SelectedMove].Piece is King) ((King)(ChessSquares[SelectedMove].Piece)).CastlingRight = false;
+                if (ChessSquares[SelectedMove].Piece is Rook) ((Rook)(ChessSquares[SelectedMove].Piece)).CastlingRight = false;
+
+                ChessSquares[
+                        Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                    .Piece = null;
+                ChessSquares[
+                        Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                    .ImagePath = null;
+
+                foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                HighlightedSquares.Clear();
+
+                foreach (var move in LastMove)
+                {
+                    ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                }
+                LastMove.Clear();
+
+                LastMove.Add(Mapping.DoubleIndexToIndex[
+                    new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                LastMove.Add(Mapping.DoubleIndexToIndex[
+                    new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+                SelectedSquare = null;
+
+                foreach (var move in LastMove)
+                {
+                    ChessSquares[move].Color = "Yellow";
+                }
             }
         }
 

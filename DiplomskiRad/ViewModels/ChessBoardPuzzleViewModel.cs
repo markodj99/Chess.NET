@@ -268,13 +268,13 @@ namespace DiplomskiRad.ViewModels
                 switch (pos[0])
                 {
                     case 'K':
-                        piece = new King(color);
+                        piece = new King(color, true); //popravi kasnije
                         break;
                     case 'Q':
                         piece = new Queen(color);
                         break;
                     case 'R':
-                        piece = new Rook(color);
+                        piece = new Rook(color, true); //popravi kasnije
                         break;
                     case 'B':
                         piece = new Bishop(color);
