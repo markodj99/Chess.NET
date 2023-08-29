@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
+using DiplomskiRad.Engine;
 using DiplomskiRad.Views;
 
 namespace DiplomskiRad.ViewModels
@@ -38,6 +40,8 @@ namespace DiplomskiRad.ViewModels
             { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" }
         };
 
+        public StockfishManager StockfishManager { get; set; }
+
         public ChessBoardGameViewModel()
         {
 
@@ -55,7 +59,20 @@ namespace DiplomskiRad.ViewModels
         {
             MessageBox.Show(EngineStrength.ToString());
             ChessSquares = SetUpBoard();
-            if (PlayerColor == Color.Black) FlipBoard.Flip();
+            StockfishManager = new StockfishManager(1);
+            if (PlayerColor == Color.Black)
+            {
+                FlipBoard.Flip();
+                StockfishManager.SendCommand("position startpos");
+                StockfishManager.SendCommand("go depth 30");
+                var move = StockfishManager.SendCommand("stop");
+            }
+            //using (var stockfishManager = new StockfishManager(EngineStrength))
+            //{
+            //    // Primjer slanja komande 'go' Stockfishu
+            //    string response = stockfishManager.SendCommand("go");
+            //    MessageBox.Show("Odgovor od Stockfisha: " + response);
+            //}
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
