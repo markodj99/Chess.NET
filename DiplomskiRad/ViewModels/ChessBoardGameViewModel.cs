@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using DiplomskiRad.Views;
 
 namespace DiplomskiRad.ViewModels
 {
@@ -38,6 +39,8 @@ namespace DiplomskiRad.ViewModels
 
         public ChessBoardGameViewModel()
         {
+
+
             FlipBoard = new FlipBoard();
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
@@ -261,6 +264,97 @@ namespace DiplomskiRad.ViewModels
 
                     ((Rook)ChessSquares[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, 3)]].Piece)
                         .CastlingRight = false;
+
+                    foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    HighlightedSquares.Clear();
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    }
+                    LastMove.Clear();
+
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+                    SelectedSquare = null;
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = "Yellow";
+                    }
+                }
+            }
+            else if (SelectedSquare.Piece is Pawn && selectedSquare.Row is (0 or 7)) // promocija
+            {
+                if (selectedSquare.Row == 0) // beli
+                {
+                    var promotionView = new PromotionWindowView();
+                    var promotionVM = new PromotionWindowViewModel(promotionView);
+                    
+                    promotionView.DataContext = promotionVM;
+                    promotionVM.SetUpPromotionPieces(Color.White);
+                    promotionView.ShowDialog();
+
+                    var currentDirectory = Directory.GetCurrentDirectory();
+                    var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
+
+                    selectedSquare.Piece = promotionVM.GetPiece();
+                    selectedSquare.ImagePath = Path.Combine(targetFolder, $"{selectedSquare.Piece.Name}_W.png");
+
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .Piece = null;
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .ImagePath = null;
+
+
+                    foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    HighlightedSquares.Clear();
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = (ChessSquares[move].Row + ChessSquares[move].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
+                    }
+                    LastMove.Clear();
+
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)]);
+                    LastMove.Add(Mapping.DoubleIndexToIndex[
+                        new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]);
+
+                    SelectedSquare = null;
+
+                    foreach (var move in LastMove)
+                    {
+                        ChessSquares[move].Color = "Yellow";
+                    }
+                }
+                else if(selectedSquare.Row == 7) // crni
+                {
+                    var promotionView = new PromotionWindowView();
+                    var promotionVM = new PromotionWindowViewModel(promotionView);
+
+                    promotionView.DataContext = promotionVM;
+                    promotionVM.SetUpPromotionPieces(Color.Black);
+                    promotionView.ShowDialog();
+
+                    var currentDirectory = Directory.GetCurrentDirectory();
+                    var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
+
+                    selectedSquare.Piece = promotionVM.GetPiece();
+                    selectedSquare.ImagePath = Path.Combine(targetFolder, $"{selectedSquare.Piece.Name}_B.png");
+
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .Piece = null;
+                    ChessSquares[
+                            Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
+                        .ImagePath = null;
+
 
                     foreach (var s in HighlightedSquares) ChessSquares[s].Color = (ChessSquares[s].Row + ChessSquares[s].Column) % 2 == 0 ? "#CCCCCC" : "#3a9cce";
                     HighlightedSquares.Clear();
