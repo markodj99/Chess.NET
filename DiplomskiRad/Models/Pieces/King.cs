@@ -13,7 +13,7 @@ namespace DiplomskiRad.Models.Pieces
 
         public King(Color color, bool castlingRight) : base("King", ushort.MaxValue, color, PieceType.King) => CastlingRight = castlingRight;
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
+        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;

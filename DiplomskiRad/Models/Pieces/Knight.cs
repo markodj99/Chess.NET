@@ -10,7 +10,7 @@ namespace DiplomskiRad.Models.Pieces
     {
         public Knight(Color color) : base("Knight", 3, color, PieceType.Knight) { }
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
+        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;

@@ -31,7 +31,7 @@ namespace DiplomskiRad.Models.Pieces
             Type = other.Type;
         }
 
-        public virtual List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board) => new(0);
+        public virtual List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1) => new(0);
 
         public override bool Equals(object? obj)
         {

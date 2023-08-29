@@ -13,7 +13,7 @@ namespace DiplomskiRad.Models.Pieces
 
         public Pawn(Color color, bool isFirstMove) : base("Pawn", 1, color, PieceType.Pawn) => IsFirstMove = isFirstMove;
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board)
+        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;
@@ -31,6 +31,12 @@ namespace DiplomskiRad.Models.Pieces
                 }
             }
             else if (board[allPossibleAdvances[0]].Piece == null) moves.Add(allPossibleAdvances[0]);
+
+            if (enPassantPosibleSquare > 0)
+            {
+                ushort move = PossibleEnPassant(chessSquare, board, enPassantPosibleSquare);
+                if (move != 70) moves.Add(move);
+            }
 
             moves.AddRange(GetAllPossibleCaptures(row, column).Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
             return moves;
@@ -73,6 +79,21 @@ namespace DiplomskiRad.Models.Pieces
             retValIndex.AddRange(retValCoord.Select(x => Mapping.CoordinateToIndex[x]));
 
             return retValIndex;
+        }
+
+        private ushort PossibleEnPassant(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare)
+        {
+            if (board[enPassantPosibleSquare].Piece.Color != chessSquare.Piece.Color)
+            {
+                if (chessSquare.Row == board[enPassantPosibleSquare].Row)
+                {
+                    int rowOffset = Color == Color.White ? -1 : 1;
+
+                    return Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(chessSquare.Row + rowOffset, board[enPassantPosibleSquare].Column)];
+                }
+            }
+
+            return 70; 
         }
     }
 }

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
 using DiplomskiRad.Views;
 
 namespace DiplomskiRad.ViewModels
@@ -182,6 +183,9 @@ namespace DiplomskiRad.ViewModels
             return false;
         }
 
+        public bool EnPassantPossibilty { get; set; } = false;
+        public int EnPassantSquare { get; set; } = -1;
+
         private void ExecuteMoveCommand(object parameter)
         {
             var selectedSquare = parameter as ChessSquare;
@@ -191,6 +195,7 @@ namespace DiplomskiRad.ViewModels
             if (SelectedSquare.Piece is King k && Math.Abs(targetColumn - selectedColumn) > 1) // rokada
             {
                 k.CastlingRight = false;
+                EnPassantPossibilty = false;
 
                 if (targetColumn == 6) // mala rokada
                 {
@@ -289,6 +294,7 @@ namespace DiplomskiRad.ViewModels
             }
             else if (SelectedSquare.Piece is Pawn && selectedSquare.Row is (0 or 7)) // promocija
             {
+                EnPassantPossibilty = false;
                 if (selectedSquare.Row == 0) // beli
                 {
                     var promotionView = new PromotionWindowView();
@@ -387,6 +393,19 @@ namespace DiplomskiRad.ViewModels
                 if (ChessSquares[SelectedMove].Piece is King) ((King)(ChessSquares[SelectedMove].Piece)).CastlingRight = false;
                 if (ChessSquares[SelectedMove].Piece is Rook) ((Rook)(ChessSquares[SelectedMove].Piece)).CastlingRight = false;
 
+                int origin = SelectedSquare.Row;
+                int target = selectedSquare.Row;
+
+                if (ChessSquares[SelectedMove].Piece is Pawn && Math.Abs(target - origin) == 2)
+                {
+                    EnPassantPossibilty = true;
+                    EnPassantSquare = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedSquare.Row, selectedSquare.Column)];
+                }
+                else
+                {
+                    EnPassantPossibilty = false;
+                }
+
                 ChessSquares[
                         Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)]]
                     .Piece = null;
@@ -420,7 +439,8 @@ namespace DiplomskiRad.ViewModels
         private void UpdateAvailableMoves()
         {
             if (SelectedSquare?.Piece == null) return;
-            var a = SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
+
+            List<ushort> a = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
             var b = AreMovesValid(a);
             HighlightedSquares.AddRange(b);
             foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
