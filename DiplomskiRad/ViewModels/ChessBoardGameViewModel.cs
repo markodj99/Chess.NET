@@ -1,19 +1,16 @@
 ﻿using DiplomskiRad.Commands;
+using DiplomskiRad.Engine;
 using DiplomskiRad.Helper;
 using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Models.Game;
 using DiplomskiRad.Models.Pieces;
+using DiplomskiRad.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
-using DiplomskiRad.Engine;
-using DiplomskiRad.Views;
 
 namespace DiplomskiRad.ViewModels
 {
