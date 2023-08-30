@@ -4,15 +4,18 @@ using System.IO;
 
 namespace DiplomskiRad.Engine
 {
-    public class StockfishManager : IDisposable
+    public class StockfishManager/* : IDisposable*/
     {
-        private Process _stockfishProcess;
-        private StreamWriter _stockfishInput;
-        private StreamReader _stockfishOutput;
+        private readonly Process _stockfishProcess;
+        private readonly StreamWriter _stockfishInput;
+        private readonly StreamReader _stockfishOutput;
 
+        private string _position;
 
         public  StockfishManager(int engineStrength)
         {
+            _position = "position startpos moves ";
+
             var currentDirectory = Directory.GetCurrentDirectory();
             var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Engine");
 
@@ -30,10 +33,8 @@ namespace DiplomskiRad.Engine
             SendCommand("uci");
             SendCommand("isready");
 
-            //SendCommand("setoption name UCI_LimitStrength value true");
-            //SendCommand("setoption name Skill Level value -1");
-
-            //ReadResponse();
+            SendCommand("setoption name UCI_LimitStrength value true");
+            SendCommand("setoption name Skill Level value 1");
         }
 
         //public string GetBestMove(string fenPosition, int depth = 10)
@@ -48,11 +49,7 @@ namespace DiplomskiRad.Engine
         //    return "bestMove";
         //}
 
-        //public void Close()
-        //{
-        //    SendCommand("quit");
-        //    _stockfishProcess.WaitForExit();
-        //}
+
 
         //private void SendCommand(string command)
         //{
@@ -69,29 +66,78 @@ namespace DiplomskiRad.Engine
         {
             _stockfishInput.WriteLine(command);
             _stockfishInput.Flush();
-            return ReadResponse();
+            return ReadResponse(command);
         }
 
-        private string ReadResponse()
+        private string ReadResponse(string command)
+        {
+            if (command.Equals("uci")) return LongResponse();
+            if (command.StartsWith("setoption") || command.StartsWith("position")) return "";
+            return ShortResponse();
+        }
+
+        private string LongResponse()
         {
             string response = "";
             string line;
 
-            line = _stockfishOutput.ReadLine();
-            //while ((line = _stockfishOutput.ReadLine()) != null)
-            //{
-            //    if (line is "uciok" or "readyok")
-            //    {
-            //        response += line + Environment.NewLine;
-            //        break;
-            //    }
-            //    response += line + Environment.NewLine;
-            //}
+            while ((line = _stockfishOutput.ReadLine()) != null)
+            {
+                if (line is "uciok" or "readyok")
+                {
+                    response += line + Environment.NewLine;
+                    break;
+                }
+                response += line + Environment.NewLine;
+            }
 
-            return line;
+            return response;
         }
 
-        public void Dispose()
+        private string ShortResponse() => _stockfishOutput.ReadLine();
+
+        public string GetBestMove(string move = "")
+        {
+            _position += move;
+            SendCommand(_position);
+            var bestMove = GetMove("go movetime 2000");
+            _position += $"{bestMove} ";
+
+            return bestMove;
+        }
+
+        private string GetMove(string command)
+        {
+            _stockfishInput.WriteLine(command);
+            _stockfishInput.Flush();
+
+            string response = "";
+            string line;
+
+            while ((line = _stockfishOutput.ReadLine()) != null)
+            {
+                if (line.StartsWith("bestmove"))
+                {
+                    return line.Split(' ')[1];
+                }
+            }
+
+            return "";
+        }
+
+        //public void Dispose()
+        //{
+        //    if (_stockfishProcess != null && !_stockfishProcess.HasExited)
+        //    {
+        //        SendCommand("quit");
+        //        _stockfishProcess.WaitForExit();
+        //        _stockfishProcess.Close();
+        //    }
+        //    _stockfishInput.Close();
+        //    _stockfishOutput.Close();
+        //}
+
+        public void Close()
         {
             if (_stockfishProcess != null && !_stockfishProcess.HasExited)
             {

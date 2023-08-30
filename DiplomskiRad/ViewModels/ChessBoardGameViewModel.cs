@@ -57,22 +57,28 @@ namespace DiplomskiRad.ViewModels
 
         public void Start()
         {
-            MessageBox.Show(EngineStrength.ToString());
+            //MessageBox.Show(EngineStrength.ToString());
             ChessSquares = SetUpBoard();
             StockfishManager = new StockfishManager(1);
             if (PlayerColor == Color.Black)
             {
                 FlipBoard.Flip();
-                StockfishManager.SendCommand("position startpos");
-                StockfishManager.SendCommand("go depth 30");
-                var move = StockfishManager.SendCommand("stop");
+
+                var firstmove = StockfishManager.GetBestMove();
+
+                int start = Mapping.CoordinateToIndex[firstmove.Substring(0, 2)];
+                int end = Mapping.CoordinateToIndex[firstmove.Substring(2)];
+
+                ChessSquares[end].Piece = ChessSquares[start].Piece;
+                ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
+
+                ChessSquares[start].Piece = null;
+                ChessSquares[start].ImagePath = null;
+
+                if (ChessSquares[end].Piece is Pawn) ((Pawn)(ChessSquares[end].Piece)).IsFirstMove = false;
+                if (ChessSquares[end].Piece is King) ((King)(ChessSquares[end].Piece)).CastlingRight = false;
+                if (ChessSquares[end].Piece is Rook) ((Rook)(ChessSquares[end].Piece)).CastlingRight = false;
             }
-            //using (var stockfishManager = new StockfishManager(EngineStrength))
-            //{
-            //    // Primjer slanja komande 'go' Stockfishu
-            //    string response = stockfishManager.SendCommand("go");
-            //    MessageBox.Show("Odgovor od Stockfisha: " + response);
-            //}
         }
 
         private ObservableCollection<ChessSquare> SetUpBoard()
@@ -145,18 +151,16 @@ namespace DiplomskiRad.ViewModels
             }
         }
 
-        public int OrdinalNumber { get; set; } = 0;
-
         private bool CanExecuteClickCommand(object parameter)
         {
             var selectedSquare = parameter as ChessSquare;
 
             if (selectedSquare.Piece != null)
             {
-                //if (selectedSquare.Piece.Color != PlayerColor)
-                //{
-                //    return false;
-                //}
+                if (selectedSquare.Piece.Color != PlayerColor)
+                {
+                    return false;
+                }
             }
 
             if (selectedSquare?.ImagePath == null) return false;
@@ -451,6 +455,26 @@ namespace DiplomskiRad.ViewModels
                     ChessSquares[move].Color = "Yellow";
                 }
             }
+
+            string a = Mapping.IndexToCoordinate[LastMove[1]];
+            string b = Mapping.IndexToCoordinate[LastMove[0]];
+
+            string x = a + b + " ";
+
+            var movex = StockfishManager.GetBestMove(x);
+
+            int start = Mapping.CoordinateToIndex[movex.Substring(0, 2)];
+            int end = Mapping.CoordinateToIndex[movex.Substring(2)];
+
+            ChessSquares[end].Piece = ChessSquares[start].Piece;
+            ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
+
+            ChessSquares[start].Piece = null;
+            ChessSquares[start].ImagePath = null;
+
+            if (ChessSquares[end].Piece is Pawn) ((Pawn)(ChessSquares[end].Piece)).IsFirstMove = false;
+            if (ChessSquares[end].Piece is King) ((King)(ChessSquares[end].Piece)).CastlingRight = false;
+            if (ChessSquares[end].Piece is Rook) ((Rook)(ChessSquares[end].Piece)).CastlingRight = false;
         }
 
         private void UpdateAvailableMoves()
