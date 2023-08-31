@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
@@ -57,7 +58,7 @@ namespace DiplomskiRad.ViewModels
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
         }
 
-        public void Start()
+        public async Task Start()
         {
             ChessSquares = SetUpBoard();
 
@@ -75,20 +76,7 @@ namespace DiplomskiRad.ViewModels
             {
                 FlipBoard.Orientation = Color.Black;
 
-                var firstmove = StockfishManager.GetBestMove();
-
-                int start = Mapping.CoordinateToIndex[firstmove.Substring(0, 2)];
-                int end = Mapping.CoordinateToIndex[firstmove.Substring(2)];
-
-                ChessSquares[end].Piece = ChessSquares[start].Piece;
-                ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
-
-                ChessSquares[start].Piece = null;
-                ChessSquares[start].ImagePath = null;
-
-                if (ChessSquares[end].Piece is Pawn) ((Pawn)(ChessSquares[end].Piece)).IsFirstMove = false;
-                if (ChessSquares[end].Piece is King) ((King)(ChessSquares[end].Piece)).CastlingRight = false;
-                if (ChessSquares[end].Piece is Rook) ((Rook)(ChessSquares[end].Piece)).CastlingRight = false;
+                await GetEngineMoveAsync(string.Empty);
             }
         }
 
@@ -188,7 +176,7 @@ namespace DiplomskiRad.ViewModels
             return false;
         }
 
-        private void ExecuteMoveCommand(object parameter)
+        private async void ExecuteMoveCommand(object parameter)
         {
             var targetSquare = parameter as ChessSquare;
             int selectedColumn = SelectedSquare.Column;
@@ -212,25 +200,77 @@ namespace DiplomskiRad.ViewModels
 
             HighlightSquares(targetSquare);
 
-            string a = Mapping.IndexToCoordinate[LastMove[1]];
-            string b = Mapping.IndexToCoordinate[LastMove[0]];
+            string a = Mapping.IndexToCoordinate[LastMove[0]];
+            string b = Mapping.IndexToCoordinate[LastMove[1]];
+            string playerMove = a + b + " ";
 
-            string x = a + b + " ";
+            await GetEngineMoveAsync(playerMove);
+        }
 
-            var movex = StockfishManager.GetBestMove(x);
+        #endregion
 
-            int start = Mapping.CoordinateToIndex[movex.Substring(0, 2)];
-            int end = Mapping.CoordinateToIndex[movex.Substring(2)];
+        #region Private Methods
 
-            ChessSquares[end].Piece = ChessSquares[start].Piece;
-            ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
+        private void UpdateAvailableMoves()
+        {
+            if (SelectedSquare?.Piece == null) return;
 
-            ChessSquares[start].Piece = null;
-            ChessSquares[start].ImagePath = null;
+            List<int> original = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
+            var final = AreMovesValid(original);
+            HighlightedSquares.AddRange(final);
+            foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
+        }
 
-            if (ChessSquares[end].Piece is Pawn) ((Pawn)(ChessSquares[end].Piece)).IsFirstMove = false;
-            if (ChessSquares[end].Piece is King) ((King)(ChessSquares[end].Piece)).CastlingRight = false;
-            if (ChessSquares[end].Piece is Rook) ((Rook)(ChessSquares[end].Piece)).CastlingRight = false;
+        private List<int> AreMovesValid(List<int> possibleMoves)
+        {
+            var retVal = new List<int>(possibleMoves);
+
+            var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)];
+            foreach (var move in possibleMoves)
+            {
+                var boardCopy = new List<ChessSquare>(ChessSquares.Count);
+
+                foreach (var square in ChessSquares)
+                {
+                    boardCopy.Add(new ChessSquare(square));
+                }
+
+                boardCopy[move].Piece = boardCopy[initialPiecePosition].Piece;
+                boardCopy[initialPiecePosition].Piece = null; // zamena pozicija
+
+                int kingPos = 100;
+                foreach (var square in boardCopy)
+                {
+                    if (square.Piece != null)
+                    {
+                        if (square.Piece.Type == PieceType.King && square.Piece.Color == SelectedSquare.Piece.Color)
+                        {
+                            kingPos = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(square.Row, square.Column)];
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var square in boardCopy)
+                {
+                    if (square.Piece != null)
+                    {
+                        if (square.Piece.Color != SelectedSquare.Piece.Color)
+                        {
+                            var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
+                            if (pieceMoves.Contains(kingPos))
+                            {
+                                retVal.Remove(move);
+                            }
+                        }
+                    }
+                }
+
+                boardCopy[initialPiecePosition].Piece = boardCopy[move].Piece;
+                boardCopy[move].Piece = null; // vracanje pozicija
+            }
+
+            return retVal;
         }
 
         private void CastlingMove(ChessSquare targetSquare)
@@ -340,8 +380,8 @@ namespace DiplomskiRad.ViewModels
             }
             LastMove.Clear();
 
-            LastMove.Add(targetSquare.Index);
             LastMove.Add(SelectedSquare.Index);
+            LastMove.Add(targetSquare.Index);
             SelectedSquare = null;
 
             foreach (var move in LastMove)
@@ -352,68 +392,33 @@ namespace DiplomskiRad.ViewModels
 
         #endregion
 
-        #region Private Methods
+        #region Engine
 
-        private void UpdateAvailableMoves()
+        private async Task GetEngineMoveAsync(string playerMove)
         {
-            if (SelectedSquare?.Piece == null) return;
+            string engineMove;
 
-            List<int> original = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
-            var final = AreMovesValid(original);
-            HighlightedSquares.AddRange(final);
-            foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
-        }
-
-        private List<int> AreMovesValid(List<int> possibleMoves)
-        {
-            var retVal = new List<int>(possibleMoves);
-
-            var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)];
-            foreach (var move in possibleMoves)
+            if (playerMove.Equals(string.Empty)) // prvi potez igra engine
             {
-                var boardCopy = new List<ChessSquare>(ChessSquares.Count);
-
-                foreach (var square in ChessSquares)
-                {
-                    boardCopy.Add(new ChessSquare(square));
-                }
-
-                boardCopy[move].Piece = boardCopy[initialPiecePosition].Piece;
-                boardCopy[initialPiecePosition].Piece = null; // zamena pozicija
-
-                int kingPos = 100;
-                foreach (var square in boardCopy)
-                {
-                    if (square.Piece != null)
-                    {
-                        if (square.Piece.Type == PieceType.King && square.Piece.Color == SelectedSquare.Piece.Color)
-                        {
-                            kingPos = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(square.Row, square.Column)];
-                            break;
-                        }
-                    }
-                }
-
-                foreach (var square in boardCopy)
-                {
-                    if (square.Piece != null)
-                    {
-                        if (square.Piece.Color != SelectedSquare.Piece.Color)
-                        {
-                            var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
-                            if (pieceMoves.Contains(kingPos))
-                            {
-                                retVal.Remove(move);
-                            }
-                        }
-                    }
-                }
-
-                boardCopy[initialPiecePosition].Piece = boardCopy[move].Piece;
-                boardCopy[move].Piece = null; // vracanje pozicija
+                engineMove = await Task.Run(() => StockfishManager.GetBestMove());
+            }
+            else // svi ostali potezi
+            {
+                engineMove = await Task.Run(() => StockfishManager.GetBestMove(playerMove));
             }
 
-            return retVal;
+            int start = Mapping.CoordinateToIndex[engineMove.Substring(0, 2)];
+            int end = Mapping.CoordinateToIndex[engineMove.Substring(2)];
+
+            ChessSquares[end].Piece = ChessSquares[start].Piece;
+            ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
+
+            ChessSquares[start].Piece = null;
+            ChessSquares[start].ImagePath = null;
+
+            if (ChessSquares[end].Piece is Pawn) ((Pawn)ChessSquares[end].Piece).IsFirstMove = false;
+            if (ChessSquares[end].Piece is King) ((King)ChessSquares[end].Piece).CastlingRight = false;
+            if (ChessSquares[end].Piece is Rook) ((Rook)ChessSquares[end].Piece).CastlingRight = false;
         }
 
         #endregion
