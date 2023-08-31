@@ -13,7 +13,7 @@ namespace DiplomskiRad.Models.Pieces
 
         public King(Color color, bool castlingRight) : base("King", ushort.MaxValue, color, PieceType.King) => CastlingRight = castlingRight;
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
+        public override List<int> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;
@@ -27,7 +27,7 @@ namespace DiplomskiRad.Models.Pieces
             allMoves.AddRange(allDiagonals);
             allMoves.AddRange(castleMoves);
 
-            var moves = new List<ushort>(8);
+            var moves = new List<int>(8);
             moves.AddRange(allMoves.Select(move => Mapping.DoubleIndexToIndex[move]));
 
             return moves;
@@ -38,32 +38,52 @@ namespace DiplomskiRad.Models.Pieces
             var allDiags = new List<KeyValuePair<int, int>>(4);
 
             if (row - 1 >= 0 && column - 1 >= 0) // gore levo
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column - 1)]].Piece == null)
+                {
                     allDiags.Add(new(row - 1, column - 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column - 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column - 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row - 1, column - 1));
+                }
+            }
 
             if (row - 1 >= 0 && column + 1 <= 7) // gore desno
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column + 1)]].Piece == null)
+                {
                     allDiags.Add(new(row - 1, column + 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column + 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column + 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row - 1, column + 1));
+                }
+            }
 
             if (row + 1 <= 7 && column - 1 >= 0) // dole levo
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column - 1)]].Piece == null)
+                {
                     allDiags.Add(new(row + 1, column - 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column - 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column - 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row + 1, column - 1));
+                }
+            }
 
             if (row + 1 <= 7 && column + 1 <= 7) // dole desno
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column + 1)]].Piece == null)
+                {
                     allDiags.Add(new(row + 1, column + 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column + 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column + 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row + 1, column + 1));
+                }
+            }
 
             return allDiags;
         }
@@ -73,32 +93,52 @@ namespace DiplomskiRad.Models.Pieces
             var allDiags = new List<KeyValuePair<int, int>>(4);
 
             if (row - 1 >= 0) // gore
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column)]].Piece == null)
+                {
                     allDiags.Add(new(row - 1, column));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - 1, column)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row - 1, column));
+                }
+            }
 
             if (row + 1 <= 7) // dole
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column)]].Piece == null)
+                {
                     allDiags.Add(new(row + 1, column));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + 1, column)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row + 1, column));
+                }
+            }
 
             if (column + 1 <= 7) // desno
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + 1)]].Piece == null)
+                {
                     allDiags.Add(new(row, column + 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row, column + 1));
+                }
+            }
 
             if (column - 1 >= 0) // levo
+            {
                 if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - 1)]].Piece == null)
+                {
                     allDiags.Add(new(row, column - 1));
-                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - 1)]].Piece
-                             .Color != Color)
+                }
+                else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - 1)]].Piece.Color != Color)
+                {
                     allDiags.Add(new(row, column - 1));
+                }
+            }
 
             return allDiags;
         }

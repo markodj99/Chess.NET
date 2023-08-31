@@ -4,7 +4,18 @@ namespace DiplomskiRad.Helper
 {
     public static class Mapping
     {
-        public static Dictionary<ushort, string> IndexToCoordinate { get; set; } = new Dictionary<ushort, string>(64)
+        public static string[,] InitialPieceOrder = new string[,]
+        {
+            { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" },
+            { "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn" },
+            { "", "", "", "", "", "", "", "" },
+            { "", "", "", "", "", "", "", "" },
+            { "", "", "", "", "", "", "", "" },
+            { "", "", "", "", "", "", "", "" },
+            { "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn", "Pawn" },
+            { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" }
+        };
+        public static Dictionary<int, string> IndexToCoordinate { get; set; } = new Dictionary<int, string>(64)
         {
             {0,  "a8"}, {1,  "b8"}, {2,  "c8"}, {3,  "d8"}, {4,  "e8"}, {5,  "f8"}, {6,  "g8"}, {7,  "h8"},
             {8,  "a7"}, {9,  "b7"}, {10, "c7"}, {11, "d7"}, {12, "e7"}, {13, "f7"}, {14, "g7"}, {15, "h7"},
@@ -13,9 +24,9 @@ namespace DiplomskiRad.Helper
             {32, "a4"}, {33, "b4"}, {34, "c4"}, {35, "d4"}, {36, "e4"}, {37, "f4"}, {38, "g4"}, {39, "h4"},
             {40, "a3"}, {41, "b3"}, {42, "c3"}, {43, "d3"}, {44, "e3"}, {45, "f3"}, {46, "g3"}, {47, "h3"},
             {48, "a2"}, {49, "b2"}, {50, "c2"}, {51, "d2"}, {52, "e2"}, {53, "f2"}, {54, "g2"}, {55, "h2"},
-            {56, "a1"}, {57, "b1"}, {58, "c1"}, {59, "d1"}, {60, "e1"}, {61, "f1"}, {62, "g1"}, {63, "h1"},
+            {56, "a1"}, {57, "b1"}, {58, "c1"}, {59, "d1"}, {60, "e1"}, {61, "f1"}, {62, "g1"}, {63, "h1"}
         };
-        public static Dictionary<string, ushort> CoordinateToIndex { get; set; } = new Dictionary<string, ushort>(64)
+        public static Dictionary<string, int> CoordinateToIndex { get; set; } = new Dictionary<string, int>(64)
         {
             {"a8",  0}, {"b8",  1}, {"c8",  2}, {"d8",  3}, {"e8",  4}, {"f8",  5}, {"g8",  6}, {"h8",  7},
             {"a7",  8}, {"b7",  9}, {"c7", 10}, {"d7", 11}, {"e7", 12}, {"f7", 13}, {"g7", 14}, {"h7", 15},
@@ -24,7 +35,7 @@ namespace DiplomskiRad.Helper
             {"a4", 32}, {"b4", 33}, {"c4", 34}, {"d4", 35}, {"e4", 36}, {"f4", 37}, {"g4", 38}, {"h4", 39},
             {"a3", 40}, {"b3", 41}, {"c3", 42}, {"d3", 43}, {"e3", 44}, {"f3", 45}, {"g3", 46}, {"h3", 47},
             {"a2", 48}, {"b2", 49}, {"c2", 50}, {"d2", 51}, {"e2", 52}, {"f2", 53}, {"g2", 54}, {"h2", 55},
-            {"a1", 56}, {"b1", 57}, {"c1", 58}, {"d1", 59}, {"e1", 60}, {"f1", 61}, {"g1", 62}, {"h1", 63},
+            {"a1", 56}, {"b1", 57}, {"c1", 58}, {"d1", 59}, {"e1", 60}, {"f1", 61}, {"g1", 62}, {"h1", 63}
         };
         public static Dictionary<KeyValuePair<int, int>, string> DoubleIndexToCoordinate { get; set; } = new Dictionary<KeyValuePair<int, int>, string>(64)
         {
@@ -35,9 +46,9 @@ namespace DiplomskiRad.Helper
             {new KeyValuePair<int, int>(4, 0), "a4"}, {new KeyValuePair<int, int>(4, 1), "b4"}, {new KeyValuePair<int, int>(4, 2), "c4"}, {new KeyValuePair<int, int>(4, 3), "d4"}, {new KeyValuePair<int, int>(4, 4), "e4"}, {new KeyValuePair<int, int>(4, 5), "f4"}, {new KeyValuePair<int, int>(4, 6), "g4"}, {new KeyValuePair<int, int>(4, 7), "h4"},
             {new KeyValuePair<int, int>(5, 0), "a3"}, {new KeyValuePair<int, int>(5, 1), "b3"}, {new KeyValuePair<int, int>(5, 2), "c3"}, {new KeyValuePair<int, int>(5, 3), "d3"}, {new KeyValuePair<int, int>(5, 4), "e3"}, {new KeyValuePair<int, int>(5, 5), "f3"}, {new KeyValuePair<int, int>(5, 6), "g3"}, {new KeyValuePair<int, int>(5, 7), "h3"},
             {new KeyValuePair<int, int>(6, 0), "a2"}, {new KeyValuePair<int, int>(6, 1), "b2"}, {new KeyValuePair<int, int>(6, 2), "c2"}, {new KeyValuePair<int, int>(6, 3), "d2"}, {new KeyValuePair<int, int>(6, 4), "e2"}, {new KeyValuePair<int, int>(6, 5), "f2"}, {new KeyValuePair<int, int>(6, 6), "g2"}, {new KeyValuePair<int, int>(6, 7), "h2"},
-            {new KeyValuePair<int, int>(7, 0), "a1"}, {new KeyValuePair<int, int>(7, 1), "b1"}, {new KeyValuePair<int, int>(7, 2), "c1"}, {new KeyValuePair<int, int>(7, 3), "d1"}, {new KeyValuePair<int, int>(7, 4), "e1"}, {new KeyValuePair<int, int>(7, 5), "f1"}, {new KeyValuePair<int, int>(7, 6), "g1"}, {new KeyValuePair<int, int>(7, 7), "h1"},
+            {new KeyValuePair<int, int>(7, 0), "a1"}, {new KeyValuePair<int, int>(7, 1), "b1"}, {new KeyValuePair<int, int>(7, 2), "c1"}, {new KeyValuePair<int, int>(7, 3), "d1"}, {new KeyValuePair<int, int>(7, 4), "e1"}, {new KeyValuePair<int, int>(7, 5), "f1"}, {new KeyValuePair<int, int>(7, 6), "g1"}, {new KeyValuePair<int, int>(7, 7), "h1"}
         };
-        public static Dictionary<ushort, KeyValuePair<int, int>> IndexToDoubleIndex { get; set; } = new Dictionary<ushort, KeyValuePair<int, int>>(64)
+        public static Dictionary<int, KeyValuePair<int, int>> IndexToDoubleIndex { get; set; } = new Dictionary<int, KeyValuePair<int, int>>(64)
         {
             {0,  new KeyValuePair<int, int>(0, 0)}, {1,  new KeyValuePair<int, int>(0, 1)}, {2,  new KeyValuePair<int, int>(0, 2)}, { 3, new KeyValuePair<int, int>(0, 3)}, {4,  new KeyValuePair<int, int>(0, 4)}, {5,  new KeyValuePair<int, int>(0, 5)}, {6,  new KeyValuePair<int, int>(0, 6)}, {7,  new KeyValuePair<int, int>(0, 7)},
             {8,  new KeyValuePair<int, int>(1, 0)}, {9,  new KeyValuePair<int, int>(1, 1)}, {10, new KeyValuePair<int, int>(1, 2)}, {11, new KeyValuePair<int, int>(1, 3)}, {12, new KeyValuePair<int, int>(1, 4)}, {13, new KeyValuePair<int, int>(1, 5)}, {14, new KeyValuePair<int, int>(1, 6)}, {15, new KeyValuePair<int, int>(1, 7)},
@@ -46,7 +57,7 @@ namespace DiplomskiRad.Helper
             {32, new KeyValuePair<int, int>(4, 0)}, {33, new KeyValuePair<int, int>(4, 1)}, {34, new KeyValuePair<int, int>(4, 2)}, {35, new KeyValuePair<int, int>(4, 3)}, {36, new KeyValuePair<int, int>(4, 4)}, {37, new KeyValuePair<int, int>(4, 5)}, {38, new KeyValuePair<int, int>(4, 6)}, {39, new KeyValuePair<int, int>(4, 7)},
             {40, new KeyValuePair<int, int>(5, 0)}, {41, new KeyValuePair<int, int>(5, 1)}, {42, new KeyValuePair<int, int>(5, 2)}, {43, new KeyValuePair<int, int>(5, 3)}, {44, new KeyValuePair<int, int>(5, 4)}, {45, new KeyValuePair<int, int>(5, 5)}, {46, new KeyValuePair<int, int>(5, 6)}, {47, new KeyValuePair<int, int>(5, 7)},
             {48, new KeyValuePair<int, int>(6, 0)}, {49, new KeyValuePair<int, int>(6, 1)}, {50, new KeyValuePair<int, int>(6, 2)}, {51, new KeyValuePair<int, int>(6, 3)}, {52, new KeyValuePair<int, int>(6, 4)}, {53, new KeyValuePair<int, int>(6, 5)}, {54, new KeyValuePair<int, int>(6, 6)}, {55, new KeyValuePair<int, int>(6, 7)},
-            {56, new KeyValuePair<int, int>(7, 0)}, {57, new KeyValuePair<int, int>(7, 1)}, {58, new KeyValuePair<int, int>(7, 2)}, {59, new KeyValuePair<int, int>(7, 3)}, {60, new KeyValuePair<int, int>(7, 4)}, {61, new KeyValuePair<int, int>(7, 5)}, {62, new KeyValuePair<int, int>(7, 6)}, {63, new KeyValuePair<int, int>(7, 7)},
+            {56, new KeyValuePair<int, int>(7, 0)}, {57, new KeyValuePair<int, int>(7, 1)}, {58, new KeyValuePair<int, int>(7, 2)}, {59, new KeyValuePair<int, int>(7, 3)}, {60, new KeyValuePair<int, int>(7, 4)}, {61, new KeyValuePair<int, int>(7, 5)}, {62, new KeyValuePair<int, int>(7, 6)}, {63, new KeyValuePair<int, int>(7, 7)}
         };
         public static Dictionary<string, KeyValuePair<int, int>> CoordinateToDoubleIndex { get; set; } = new Dictionary<string, KeyValuePair<int, int>>(64)
         {
@@ -57,9 +68,9 @@ namespace DiplomskiRad.Helper
             {"a4", new KeyValuePair<int, int>(4, 0)}, {"b4", new KeyValuePair<int, int>(4, 1)}, {"c4", new KeyValuePair<int, int>(4, 2)}, {"d4", new KeyValuePair<int, int>(4, 3)}, {"e4", new KeyValuePair<int, int>(4, 4)}, {"f4", new KeyValuePair<int, int>(4, 5)}, {"g4", new KeyValuePair<int, int>(4, 6)}, {"h4", new KeyValuePair<int, int>(4, 7)},
             {"a3", new KeyValuePair<int, int>(5, 0)}, {"b3", new KeyValuePair<int, int>(5, 1)}, {"c3", new KeyValuePair<int, int>(5, 2)}, {"d3", new KeyValuePair<int, int>(5, 3)}, {"e3", new KeyValuePair<int, int>(5, 4)}, {"f3", new KeyValuePair<int, int>(5, 5)}, {"g3", new KeyValuePair<int, int>(5, 6)}, {"h3", new KeyValuePair<int, int>(5, 7)},
             {"a2", new KeyValuePair<int, int>(6, 0)}, {"b2", new KeyValuePair<int, int>(6, 1)}, {"c2", new KeyValuePair<int, int>(6, 2)}, {"d2", new KeyValuePair<int, int>(6, 3)}, {"e2", new KeyValuePair<int, int>(6, 4)}, {"f2", new KeyValuePair<int, int>(6, 5)}, {"g2", new KeyValuePair<int, int>(6, 6)}, {"h2", new KeyValuePair<int, int>(6, 7)},
-            {"a1", new KeyValuePair<int, int>(7, 0)}, {"b1", new KeyValuePair<int, int>(7, 1)}, {"c1", new KeyValuePair<int, int>(7, 2)}, {"d1", new KeyValuePair<int, int>(7, 3)}, {"e1", new KeyValuePair<int, int>(7, 4)}, {"f1", new KeyValuePair<int, int>(7, 5)}, {"g1", new KeyValuePair<int, int>(7, 6)}, {"h1", new KeyValuePair<int, int>(7, 7)},
+            {"a1", new KeyValuePair<int, int>(7, 0)}, {"b1", new KeyValuePair<int, int>(7, 1)}, {"c1", new KeyValuePair<int, int>(7, 2)}, {"d1", new KeyValuePair<int, int>(7, 3)}, {"e1", new KeyValuePair<int, int>(7, 4)}, {"f1", new KeyValuePair<int, int>(7, 5)}, {"g1", new KeyValuePair<int, int>(7, 6)}, {"h1", new KeyValuePair<int, int>(7, 7)}
         };
-        public static Dictionary<KeyValuePair<int, int>, ushort> DoubleIndexToIndex { get; set; } = new Dictionary<KeyValuePair<int, int>, ushort>(64)
+        public static Dictionary<KeyValuePair<int, int>, int> DoubleIndexToIndex { get; set; } = new Dictionary<KeyValuePair<int, int>, int>(64)
         {
             {new KeyValuePair<int, int>(0, 0), 0}, {new KeyValuePair<int, int>(0, 1), 1}, {new KeyValuePair<int, int>(0, 2), 2}, {new KeyValuePair<int, int>(0, 3), 3}, {new KeyValuePair<int, int>(0, 4), 4}, {new KeyValuePair<int, int>(0, 5), 5}, {new KeyValuePair<int, int>(0, 6), 6}, {new KeyValuePair<int, int>(0, 7), 7},
             {new KeyValuePair<int, int>(1, 0), 8}, {new KeyValuePair<int, int>(1, 1), 9}, {new KeyValuePair<int, int>(1, 2), 10}, {new KeyValuePair<int, int>(1, 3), 11}, {new KeyValuePair<int, int>(1, 4), 12}, {new KeyValuePair<int, int>(1, 5), 13}, {new KeyValuePair<int, int>(1, 6), 14}, {new KeyValuePair<int, int>(1, 7), 15},
@@ -68,8 +79,7 @@ namespace DiplomskiRad.Helper
             {new KeyValuePair<int, int>(4, 0), 32}, {new KeyValuePair<int, int>(4, 1), 33}, {new KeyValuePair<int, int>(4, 2), 34}, {new KeyValuePair<int, int>(4, 3), 35}, {new KeyValuePair<int, int>(4, 4), 36}, {new KeyValuePair<int, int>(4, 5), 37}, {new KeyValuePair<int, int>(4, 6), 38}, {new KeyValuePair<int, int>(4, 7), 39},
             {new KeyValuePair<int, int>(5, 0), 40}, {new KeyValuePair<int, int>(5, 1), 41}, {new KeyValuePair<int, int>(5, 2), 42}, {new KeyValuePair<int, int>(5, 3), 43}, {new KeyValuePair<int, int>(5, 4), 44}, {new KeyValuePair<int, int>(5, 5), 45}, {new KeyValuePair<int, int>(5, 6), 46}, {new KeyValuePair<int, int>(5, 7), 47},
             {new KeyValuePair<int, int>(6, 0), 48}, {new KeyValuePair<int, int>(6, 1), 49}, {new KeyValuePair<int, int>(6, 2), 50}, {new KeyValuePair<int, int>(6, 3), 51}, {new KeyValuePair<int, int>(6, 4), 52}, {new KeyValuePair<int, int>(6, 5), 53}, {new KeyValuePair<int, int>(6, 6), 54}, {new KeyValuePair<int, int>(6, 7), 55},
-            {new KeyValuePair<int, int>(7, 0), 56}, {new KeyValuePair<int, int>(7, 1), 57}, {new KeyValuePair<int, int>(7, 2), 58}, {new KeyValuePair<int, int>(7, 3), 59}, {new KeyValuePair<int, int>(7, 4), 60}, {new KeyValuePair<int, int>(7, 5), 61}, {new KeyValuePair<int, int>(7, 6), 62}, {new KeyValuePair<int, int>(7, 7), 63},
-
+            {new KeyValuePair<int, int>(7, 0), 56}, {new KeyValuePair<int, int>(7, 1), 57}, {new KeyValuePair<int, int>(7, 2), 58}, {new KeyValuePair<int, int>(7, 3), 59}, {new KeyValuePair<int, int>(7, 4), 60}, {new KeyValuePair<int, int>(7, 5), 61}, {new KeyValuePair<int, int>(7, 6), 62}, {new KeyValuePair<int, int>(7, 7), 63}
         };
     }
 }

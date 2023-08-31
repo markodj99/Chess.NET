@@ -1,17 +1,36 @@
 ﻿using System;
-using DiplomskiRad.Models.Enums;
-using DiplomskiRad.Models.Game;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using DiplomskiRad.Models.Enums;
 
-namespace DiplomskiRad.Helper
+namespace DiplomskiRad.Models.Game
 {
-    public class Parser
+    public class PuzzleManager
     {
-        private static string[] _folders = { "Rating_250_950", "Rating_1000_2000", "Rating_2050_2800" };
+        public List<ChessPuzzle> ChessPuzzles { get; set; }
+        public int OrdinalNumber { get; set; }
+        public int OrdinalMoveNumber { get; set; }
+        public int ErrorCount { get; set; }
+        public int Rating { get; set; }
 
-        public static List<ChessPuzzle> ParseFile()
+        public PuzzleManager() { }
+
+        public void Initialize()
+        {
+            OrdinalNumber = 0;
+            OrdinalMoveNumber = 0;
+            ErrorCount = 0;
+            Rating = 250;
+            ChessPuzzles = ParseFile();
+        }
+
+        private readonly string[] _folders = { "Rating_250_950", "Rating_1000_2000", "Rating_2050_2800" };
+
+        private List<ChessPuzzle> ParseFile()
         {
             var retVal = new List<ChessPuzzle>();
 
@@ -26,7 +45,7 @@ namespace DiplomskiRad.Helper
             return retVal;
         }
 
-        private static List<ChessPuzzle> GetPuzzleFromFolder(string folderPath)
+        private List<ChessPuzzle> GetPuzzleFromFolder(string folderPath)
         {
             var random = new Random();
             var retVal = new List<ChessPuzzle>();
@@ -63,9 +82,16 @@ namespace DiplomskiRad.Helper
                 }
 
                 retVal.Add(potentialThree[random.Next(0, 3)]);
+                potentialThree.Clear();
             }
 
             return retVal;
         }
+
+        public ChessPuzzle GetCurrentPuzzle() => ChessPuzzles[OrdinalNumber];
+
+        public void IncrementOrdinalNumber() => OrdinalNumber++;
+
+        public bool Condition() => OrdinalNumber is 51 or > 51;
     }
 }

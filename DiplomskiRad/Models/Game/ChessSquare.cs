@@ -7,7 +7,8 @@ namespace DiplomskiRad.Models.Game
     {
         public int Row { get; set; }
         public int Column { get; set; }
-
+        public int Index { get; set; }
+        public string Coordinate { get; set; }
         private string _color;
         public string Color
         {
@@ -32,10 +33,23 @@ namespace DiplomskiRad.Models.Game
             }
         }
 
+        public ChessSquare(int row, int column, int index, string coordinate, Piece piece, string color, string imagePath)
+        {
+            Row = row;
+            Column = column;
+            Index = index;
+            Coordinate = coordinate;
+            Piece = piece;
+            Color = color;
+            ImagePath = imagePath;
+        }
+
         public ChessSquare(ChessSquare other)
         {
             Row = other.Row;
             Column = other.Column;
+            Index = other.Index;
+            Coordinate = other.Coordinate;
             Color = other.Color;
             Piece = other.Piece;
             ImagePath = other.ImagePath;
@@ -48,7 +62,7 @@ namespace DiplomskiRad.Models.Game
             if (obj == null || GetType() != obj.GetType()) return false;
 
             var other = (ChessSquare)obj;
-            return Row == other.Row && Column == other.Column;
+            return Index == other.Index;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

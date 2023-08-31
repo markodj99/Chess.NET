@@ -2,7 +2,6 @@
 using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Models.Game;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 
 namespace DiplomskiRad.Models.Pieces
@@ -13,12 +12,12 @@ namespace DiplomskiRad.Models.Pieces
 
         public Pawn(Color color, bool isFirstMove) : base("Pawn", 1, color, PieceType.Pawn) => IsFirstMove = isFirstMove;
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
+        public override List<int> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;
 
-            var moves = new List<ushort>(4);
+            var moves = new List<int>(5);
 
             var allPossibleAdvances = GetAllPossibleAdvances(row, column);
 
@@ -27,36 +26,48 @@ namespace DiplomskiRad.Models.Pieces
                 if (board[allPossibleAdvances[0]].Piece == null)
                 {
                     moves.Add(allPossibleAdvances[0]);
-                    if (board[allPossibleAdvances[1]].Piece == null) moves.Add(allPossibleAdvances[1]);
+                    if (board[allPossibleAdvances[1]].Piece == null)
+                    {
+                        moves.Add(allPossibleAdvances[1]);
+                    }
                 }
             }
-            else if (board[allPossibleAdvances[0]].Piece == null) moves.Add(allPossibleAdvances[0]);
+            else if (board[allPossibleAdvances[0]].Piece == null)
+            {
+                moves.Add(allPossibleAdvances[0]);
+            }
 
             if (enPassantPosibleSquare > 0)
             {
-                ushort move = PossibleEnPassant(chessSquare, board, enPassantPosibleSquare);
-                if (move != 70) moves.Add(move);
+                int move = PossibleEnPassant(chessSquare, board, enPassantPosibleSquare);
+                if (move != 70)
+                {
+                    moves.Add(move);
+                }
             }
 
             moves.AddRange(GetAllPossibleCaptures(row, column).Where(pos => board[pos].Piece != null && board[pos].Piece.Color != chessSquare.Piece.Color));
             return moves;
         }
 
-        private List<ushort> GetAllPossibleAdvances(int row, int column)
+        private List<int> GetAllPossibleAdvances(int row, int column)
         {
             var retValCoord = new List<string>(2);
             int rowOffset = Color == Color.White ? -1 : 1;
 
             retValCoord.Add(Mapping.DoubleIndexToCoordinate[new KeyValuePair<int, int>(row + rowOffset, column)]);
-            if (IsFirstMove) retValCoord.Add(Mapping.DoubleIndexToCoordinate[new KeyValuePair<int, int>(row + rowOffset * 2, column)]);
+            if (IsFirstMove)
+            {
+                retValCoord.Add(Mapping.DoubleIndexToCoordinate[new KeyValuePair<int, int>(row + rowOffset * 2, column)]);
+            }
 
-            var retValIndex = new List<ushort>(retValCoord.Count);
+            var retValIndex = new List<int>(retValCoord.Count);
             retValIndex.AddRange(retValCoord.Select(x => Mapping.CoordinateToIndex[x]));
 
             return retValIndex;
         }
 
-        private List<ushort> GetAllPossibleCaptures(int row, int column)
+        private List<int> GetAllPossibleCaptures(int row, int column)
         {
             var retValCoord = new List<string>(2);
             int rowOffset = Color == Color.White ? -1 : 1;
@@ -75,13 +86,13 @@ namespace DiplomskiRad.Models.Pieces
                     break;
             }
 
-            var retValIndex = new List<ushort>(retValCoord.Count);
+            var retValIndex = new List<int>(retValCoord.Count);
             retValIndex.AddRange(retValCoord.Select(x => Mapping.CoordinateToIndex[x]));
 
             return retValIndex;
         }
 
-        private ushort PossibleEnPassant(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare)
+        private int PossibleEnPassant(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare)
         {
             if (board[enPassantPosibleSquare].Piece.Color != chessSquare.Piece.Color)
             {

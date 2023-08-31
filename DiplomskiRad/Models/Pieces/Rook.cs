@@ -12,14 +12,14 @@ namespace DiplomskiRad.Models.Pieces
 
         public Rook(Color color, bool castlingRight) : base("Rook", 5, color, PieceType.Rook) => CastlingRight = castlingRight;
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
+        public override List<int> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;
 
             var allMoves = GetAllHorizontalsAndVerticals(board, row, column);
 
-            var moves = new List<ushort>(13);
+            var moves = new List<int>(13);
             moves.AddRange(allMoves.Select(move => Mapping.DoubleIndexToIndex[move]));
 
             return moves;
@@ -27,18 +27,19 @@ namespace DiplomskiRad.Models.Pieces
 
         private List<KeyValuePair<int, int>> GetAllHorizontalsAndVerticals(List<ChessSquare> board, int row, int column)
         {
-            var allDiags = new List<KeyValuePair<int, int>>(14);
+            var allHorizontalsAndVerticals = new List<KeyValuePair<int, int>>(14);
 
             for (int i = 1; i <= 7; i++) // gore
             {
                 if (row - i >= 0)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column)]].Piece == null)
-                        allDiags.Add(new(row - i, column));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column)]].Piece
-                                 .Color != Color)
                     {
-                        allDiags.Add(new(row - i, column));
+                        allHorizontalsAndVerticals.Add(new(row - i, column));
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column)]].Piece.Color != Color)
+                    {
+                        allHorizontalsAndVerticals.Add(new(row - i, column));
                         break;
                     }
                     else break;
@@ -50,11 +51,12 @@ namespace DiplomskiRad.Models.Pieces
                 if (row + i <= 7)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column)]].Piece == null)
-                        allDiags.Add(new(row + i, column));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column)]].Piece
-                                 .Color != Color)
                     {
-                        allDiags.Add(new(row + i, column));
+                        allHorizontalsAndVerticals.Add(new(row + i, column));
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column)]].Piece.Color != Color)
+                    {
+                        allHorizontalsAndVerticals.Add(new(row + i, column));
                         break;
                     }
                     else break;
@@ -66,11 +68,12 @@ namespace DiplomskiRad.Models.Pieces
                 if (column + i <= 7)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + i)]].Piece == null)
-                        allDiags.Add(new(row, column + i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + i)]].Piece
-                                 .Color != Color)
                     {
-                        allDiags.Add(new(row, column + i));
+                        allHorizontalsAndVerticals.Add(new(row, column + i));
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column + i)]].Piece.Color != Color)
+                    {
+                        allHorizontalsAndVerticals.Add(new(row, column + i));
                         break;
                     }
                     else break;
@@ -82,18 +85,19 @@ namespace DiplomskiRad.Models.Pieces
                 if (column - i >= 0)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - i)]].Piece == null)
-                        allDiags.Add(new(row, column - i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - i)]].Piece
-                                 .Color != Color)
                     {
-                        allDiags.Add(new(row, column - i));
+                        allHorizontalsAndVerticals.Add(new(row, column - i));
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row, column - i)]].Piece.Color != Color)
+                    {
+                        allHorizontalsAndVerticals.Add(new(row, column - i));
                         break;
                     }
                     else break;
                 }
             }
 
-            return allDiags;
+            return allHorizontalsAndVerticals;
         }
     }
 }

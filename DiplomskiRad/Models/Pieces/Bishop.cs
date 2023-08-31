@@ -10,14 +10,14 @@ namespace DiplomskiRad.Models.Pieces
     {
         public Bishop(Color color) : base("Bishop", 3, color, PieceType.Bishop) { }
 
-        public override List<ushort> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
+        public override List<int> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
             int row = chessSquare.Row;
             int column = chessSquare.Column;
 
             var allDiags = GetAllDiagonals(board, row, column);
 
-            var moves = new List<ushort>(13);
+            var moves = new List<int>(13);
             moves.AddRange(allDiags.Select(diag => Mapping.DoubleIndexToIndex[diag]));
 
             return moves;
@@ -32,9 +32,10 @@ namespace DiplomskiRad.Models.Pieces
                 if (row - i >= 0 && column - i >= 0)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column - i)]].Piece == null)
+                    {
                         allDiags.Add(new(row - i, column - i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column - i)]].Piece
-                                 .Color != Color)
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column - i)]].Piece.Color != Color)
                     {
                         allDiags.Add(new(row - i, column - i));
                         break;
@@ -48,9 +49,10 @@ namespace DiplomskiRad.Models.Pieces
                 if (row - i >= 0 && column + i <= 7)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column + i)]].Piece == null)
+                    {
                         allDiags.Add(new(row - i, column + i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column + i)]].Piece
-                                 .Color != Color)
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row - i, column + i)]].Piece.Color != Color)
                     {
                         allDiags.Add(new(row - i, column + i));
                         break;
@@ -64,9 +66,10 @@ namespace DiplomskiRad.Models.Pieces
                 if (row + i <= 7 && column - i >= 0)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column - i)]].Piece == null)
+                    {
                         allDiags.Add(new(row + i, column - i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column - i)]].Piece
-                                 .Color != Color)
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column - i)]].Piece.Color != Color)
                     {
                         allDiags.Add(new(row + i, column - i));
                         break;
@@ -80,9 +83,10 @@ namespace DiplomskiRad.Models.Pieces
                 if (row + i <= 7 && column + i <= 7)
                 {
                     if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column + i)]].Piece == null)
+                    {
                         allDiags.Add(new(row + i, column + i));
-                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column + i)]].Piece
-                                 .Color != Color)
+                    }
+                    else if (board[Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(row + i, column + i)]].Piece.Color != Color)
                     {
                         allDiags.Add(new(row + i, column + i));
                         break;
