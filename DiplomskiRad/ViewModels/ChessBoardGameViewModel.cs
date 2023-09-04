@@ -183,30 +183,33 @@ namespace DiplomskiRad.ViewModels
             int targetRow = targetSquare.Row, targetColumn = targetSquare.Column;
 
             int start = SelectedSquare.Index, end = targetSquare.Index;
+            bool promotion = false;
+            string promotionPiece = "k";
 
-            if (SelectedSquare.Piece is King k && Math.Abs(targetColumn - selectedColumn) > 1) // rokada
+            if (SelectedSquare.Piece is King && Math.Abs(targetColumn - selectedColumn) > 1) // rokada
             {
-                k.CastlingRight = false;
-                EnPassantPossibilty = false;
-                CastlingMove(targetSquare);
+                CastlingMove(targetSquare, SelectedSquare);
             }
             else if (SelectedSquare.Piece is Pawn && targetRow is (0 or 7)) // promocija
             {
-                EnPassantPossibilty = false;
-                PromotionMove(targetSquare);
+                promotion = true;
+                promotionPiece = PromotionMove(targetSquare).ToLower();
             }
             else
             {
                 OrdinaryMove(targetSquare);
             }
 
+            EnPassantPossibilty = false;
+
             HighlightSquares(start, end);
 
             string a = Mapping.IndexToCoordinate[LastMove[0]];
             string b = Mapping.IndexToCoordinate[LastMove[1]];
-            string playerMove = a + b + " ";
+            string playerMove = a + b;
+            playerMove += promotion ? $"{promotionPiece} " : " ";
 
-            //await GetEngineMoveAsync(playerMove);
+            await GetEngineMoveAsync(playerMove);
         }
 
         #endregion
@@ -277,9 +280,9 @@ namespace DiplomskiRad.ViewModels
             return retVal;
         }
 
-        private void CastlingMove(ChessSquare targetSquare)
+        private void CastlingMove(ChessSquare targetSquare, ChessSquare selectedSquare)
         {
-            int selectedRow = SelectedSquare.Row;
+            int selectedRow = selectedSquare.Row;
             int targetColumn = targetSquare.Column;
 
             int origin = -1, destenation = -1;
@@ -295,11 +298,11 @@ namespace DiplomskiRad.ViewModels
                 destenation = 3;
             }
 
-            ChessSquares[targetSquare.Index].Piece = SelectedSquare.Piece;
-            ChessSquares[targetSquare.Index].ImagePath = SelectedSquare.ImagePath;
+            ChessSquares[targetSquare.Index].Piece = selectedSquare.Piece;
+            ChessSquares[targetSquare.Index].ImagePath = selectedSquare.ImagePath;
 
-            ChessSquares[SelectedSquare.Index].Piece = null;
-            ChessSquares[SelectedSquare.Index].ImagePath = null;
+            ChessSquares[selectedSquare.Index].Piece = null;
+            ChessSquares[selectedSquare.Index].ImagePath = null;
 
             int start = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, origin)];
             int finish = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(selectedRow, destenation)];
@@ -310,10 +313,11 @@ namespace DiplomskiRad.ViewModels
             ChessSquares[start].Piece = null;
             ChessSquares[start].ImagePath = null;
 
+            ((King)ChessSquares[targetSquare.Index].Piece).CastlingRight = false;
             ((Rook)ChessSquares[finish].Piece).CastlingRight = false;
         }
 
-        private void PromotionMove(ChessSquare targetSquare)
+        private string PromotionMove(ChessSquare targetSquare)
         {
             var promotionView = new PromotionWindowView();
             var promotionVM = new PromotionWindowViewModel(promotionView);
@@ -342,6 +346,8 @@ namespace DiplomskiRad.ViewModels
 
             ChessSquares[SelectedSquare.Index].Piece = null;
             ChessSquares[SelectedSquare.Index].ImagePath = null;
+
+            return targetSquare.Piece.Name.Substring(0, 1);
         }
 
         private void OrdinaryMove(ChessSquare targetSquare)
@@ -353,16 +359,21 @@ namespace DiplomskiRad.ViewModels
             if (ChessSquares[targetSquare.Index].Piece is King) ((King)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
             if (ChessSquares[targetSquare.Index].Piece is Rook) ((Rook)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
 
-            int origin = SelectedSquare.Row;
-            int target = targetSquare.Row;
+            int start = targetSquare.Index;
+            int end = SelectedSquare.Index;
 
-            if (ChessSquares[targetSquare.Index].Piece is Pawn && Math.Abs(target - origin) == 2)
+            if (ChessSquares[start].Piece is Pawn && Math.Abs(start - end) is (7 or 9) && ChessSquares[end].Piece is null) // en passant
             {
-                EnPassantPossibilty = true;
-                EnPassantSquare = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(targetSquare.Row, targetSquare.Column)];
-            }
-            else
-            {
+                var origin = Mapping.IndexToDoubleIndex[start];
+                var destenation = Mapping.IndexToDoubleIndex[end];
+
+                int targetRow = origin.Key;
+                int targetColumn = destenation.Value;
+
+                int pawnIndexToRemove = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(targetRow, targetColumn)];
+                ChessSquares[pawnIndexToRemove].Piece = null;
+                ChessSquares[pawnIndexToRemove].ImagePath = null;
+
                 EnPassantPossibilty = false;
             }
 
@@ -411,20 +422,126 @@ namespace DiplomskiRad.ViewModels
                 engineMove = await Task.Run(() => StockfishManager.GetBestMove(playerMove));
             }
 
+            MakeEngineMove(engineMove);
+
             int start = Mapping.CoordinateToIndex[engineMove.Substring(0, 2)];
-            int end = Mapping.CoordinateToIndex[engineMove.Substring(2)];
-
-            ChessSquares[end].Piece = ChessSquares[start].Piece;
-            ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
-
-            ChessSquares[start].Piece = null;
-            ChessSquares[start].ImagePath = null;
-
-            if (ChessSquares[end].Piece is Pawn) ((Pawn)ChessSquares[end].Piece).IsFirstMove = false;
-            if (ChessSquares[end].Piece is King) ((King)ChessSquares[end].Piece).CastlingRight = false;
-            if (ChessSquares[end].Piece is Rook) ((Rook)ChessSquares[end].Piece).CastlingRight = false;
-
+            int end = Mapping.CoordinateToIndex[engineMove.Substring(2, 2)];
             HighlightSquares(start, end);
+        }
+
+        private void MakeEngineMove(string engineMove)
+        {
+            if (ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(0, 2)]].Piece is King)
+            {
+                switch (engineMove)
+                {
+                    case "e1g1": // mala rokada beli
+                        CastlingMove(ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(2)]],
+                            ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(0, 2)]]);
+                        return;
+                    case "e1c1": // velika rokada beli
+                        CastlingMove(ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(2)]],
+                            ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(0, 2)]]);
+                        return;
+                    case "e8g8": // mala rokada crni
+                        CastlingMove(ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(2)]],
+                            ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(0, 2)]]);
+                        return;
+                    case "e8c8": // velika rokada crni
+                        CastlingMove(ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(2)]],
+                            ChessSquares[Mapping.CoordinateToIndex[engineMove.Substring(0, 2)]]);
+                        return;
+                }
+
+                EnPassantPossibilty = false;
+            }
+
+            if (engineMove.Length == 5) // promocija
+            {
+                int origin = Mapping.CoordinateToIndex[engineMove.Substring(0, 2)];
+                int destenation = Mapping.CoordinateToIndex[engineMove.Substring(2, 2)];
+                string promotionChar = engineMove.Substring(4);
+
+                ChessSquares[origin].Piece = null;
+                ChessSquares[origin].ImagePath = null;
+
+                ChessSquares[destenation].Piece = GetPromotionPiece(promotionChar);
+                ChessSquares[destenation].ImagePath = GetPromotionPieceImage(promotionChar);
+
+                EnPassantPossibilty = false;
+            }
+            else // obican potez i en passant
+            {
+                int start = Mapping.CoordinateToIndex[engineMove.Substring(0, 2)];
+                int end = Mapping.CoordinateToIndex[engineMove.Substring(2)];
+
+                if (ChessSquares[start].Piece is Pawn && Math.Abs(start - end) is (7 or 9) && ChessSquares[end].Piece is null) // en passant
+                {
+                    var origin = Mapping.IndexToDoubleIndex[start];
+                    var destenation = Mapping.IndexToDoubleIndex[end];
+
+                    int targetRow = origin.Key;
+                    int targetColumn = destenation.Value;
+
+                    int pawnIndexToRemove = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(targetRow, targetColumn)];
+                    ChessSquares[pawnIndexToRemove].Piece = null;
+                    ChessSquares[pawnIndexToRemove].ImagePath = null;
+
+                    EnPassantPossibilty = false;
+                }
+
+                ChessSquares[end].Piece = ChessSquares[start].Piece;
+                ChessSquares[end].ImagePath = ChessSquares[start].ImagePath;
+
+                ChessSquares[start].Piece = null;
+                ChessSquares[start].ImagePath = null;
+
+                if (ChessSquares[end].Piece is Pawn) ((Pawn)ChessSquares[end].Piece).IsFirstMove = false;
+                if (ChessSquares[end].Piece is King) ((King)ChessSquares[end].Piece).CastlingRight = false;
+                if (ChessSquares[end].Piece is Rook) ((Rook)ChessSquares[end].Piece).CastlingRight = false;
+
+                if (ChessSquares[end].Piece is Pawn && Math.Abs(end - start) == 2)
+                {
+                    EnPassantPossibilty = true;
+
+                    var targetSquare = Mapping.IndexToDoubleIndex[end];
+                    EnPassantSquare = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(targetSquare.Key, targetSquare.Value)];
+                }
+                else
+                {
+                    EnPassantPossibilty = false;
+                }
+            }
+        }
+
+        private Piece GetPromotionPiece(string promotionChar)
+        {
+            var color = PlayerColor == Color.White ? Color.Black : Color.White;
+
+            return promotionChar switch
+            {
+                "q" => new Queen(color),
+                "n" => new Knight(color),
+                "r" => new Rook(color, false),
+                "b" => new Bishop(color),
+                _ => new Piece("King", ushort.MaxValue, Color.White, PieceType.King)
+            };
+        }
+
+        private string GetPromotionPieceImage(string promotionChar)
+        {
+            var color = PlayerColor == Color.White ? "B" : "W";
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Images");
+
+            return promotionChar switch
+            {
+                "q" => Path.Combine(targetFolder, $"Queen_{color}.png"),
+                "n" => Path.Combine(targetFolder, $"Knight_{color}.png"),
+                "r" => Path.Combine(targetFolder, $"Rook_{color}.png"),
+                "b" => Path.Combine(targetFolder, $"Bishop_{color}.png"),
+                _ => Path.Combine(targetFolder, "King_W.png")
+            };
         }
 
         #endregion
