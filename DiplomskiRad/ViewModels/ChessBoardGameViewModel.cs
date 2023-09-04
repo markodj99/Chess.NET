@@ -426,6 +426,7 @@ namespace DiplomskiRad.ViewModels
 
             int start = Mapping.CoordinateToIndex[engineMove.Substring(0, 2)];
             int end = Mapping.CoordinateToIndex[engineMove.Substring(2, 2)];
+
             HighlightSquares(start, end);
         }
 
