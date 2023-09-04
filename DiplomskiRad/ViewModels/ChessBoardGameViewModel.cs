@@ -182,6 +182,8 @@ namespace DiplomskiRad.ViewModels
             int selectedColumn = SelectedSquare.Column;
             int targetRow = targetSquare.Row, targetColumn = targetSquare.Column;
 
+            int start = SelectedSquare.Index, end = targetSquare.Index;
+
             if (SelectedSquare.Piece is King k && Math.Abs(targetColumn - selectedColumn) > 1) // rokada
             {
                 k.CastlingRight = false;
@@ -198,13 +200,13 @@ namespace DiplomskiRad.ViewModels
                 OrdinaryMove(targetSquare);
             }
 
-            HighlightSquares(targetSquare);
+            HighlightSquares(start, end);
 
             string a = Mapping.IndexToCoordinate[LastMove[0]];
             string b = Mapping.IndexToCoordinate[LastMove[1]];
             string playerMove = a + b + " ";
 
-            await GetEngineMoveAsync(playerMove);
+            //await GetEngineMoveAsync(playerMove);
         }
 
         #endregion
@@ -214,11 +216,13 @@ namespace DiplomskiRad.ViewModels
         private void UpdateAvailableMoves()
         {
             if (SelectedSquare?.Piece == null) return;
-
-            List<int> original = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
+            var original = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
             var final = AreMovesValid(original);
             HighlightedSquares.AddRange(final);
-            foreach (var t in HighlightedSquares) ChessSquares[t].Color = "Black";
+            foreach (var t in HighlightedSquares)
+            {
+                ChessSquares[t].Color = "Black";
+            }
         }
 
         private List<int> AreMovesValid(List<int> possibleMoves)
@@ -366,7 +370,7 @@ namespace DiplomskiRad.ViewModels
             ChessSquares[SelectedSquare.Index].ImagePath = null;
         }
 
-        private void HighlightSquares(ChessSquare targetSquare)
+        private void HighlightSquares(int start, int end)
         {
             foreach (var s in HighlightedSquares)
             {
@@ -380,8 +384,8 @@ namespace DiplomskiRad.ViewModels
             }
             LastMove.Clear();
 
-            LastMove.Add(SelectedSquare.Index);
-            LastMove.Add(targetSquare.Index);
+            LastMove.Add(start);
+            LastMove.Add(end);
             SelectedSquare = null;
 
             foreach (var move in LastMove)
@@ -394,7 +398,7 @@ namespace DiplomskiRad.ViewModels
 
         #region Engine
 
-        private async Task GetEngineMoveAsync(string playerMove)
+        private async Task GetEngineMoveAsync(string playerMove, bool promotion = false)
         {
             string engineMove;
 
@@ -419,6 +423,8 @@ namespace DiplomskiRad.ViewModels
             if (ChessSquares[end].Piece is Pawn) ((Pawn)ChessSquares[end].Piece).IsFirstMove = false;
             if (ChessSquares[end].Piece is King) ((King)ChessSquares[end].Piece).CastlingRight = false;
             if (ChessSquares[end].Piece is Rook) ((Rook)ChessSquares[end].Piece).CastlingRight = false;
+
+            HighlightSquares(start, end);
         }
 
         #endregion

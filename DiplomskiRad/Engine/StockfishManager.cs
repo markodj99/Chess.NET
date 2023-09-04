@@ -34,7 +34,7 @@ namespace DiplomskiRad.Engine
             SendCommand("isready");
 
             SendCommand("setoption name UCI_LimitStrength value true");
-            SendCommand("setoption name Skill Level value 1");
+            SendCommand("setoption name Skill Level value 20");
         }
 
         //public string GetBestMove(string fenPosition, int depth = 10)
@@ -116,10 +116,7 @@ namespace DiplomskiRad.Engine
 
             while ((line = _stockfishOutput.ReadLine()) != null)
             {
-                if (line.StartsWith("bestmove"))
-                {
-                    return line.Split(' ')[1];
-                }
+                if (line.StartsWith("bestmove")) return line.Split(' ')[1];
             }
 
             return "";
