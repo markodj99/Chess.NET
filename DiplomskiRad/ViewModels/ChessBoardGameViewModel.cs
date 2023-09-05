@@ -45,6 +45,7 @@ namespace DiplomskiRad.ViewModels
 
         public bool EnPassantPossibilty { get; set; }
         public int EnPassantSquare { get; set; }
+        public bool CanPlayerMove { get; set; }
 
         #endregion
 
@@ -74,9 +75,14 @@ namespace DiplomskiRad.ViewModels
 
             if (PlayerColor == Color.Black) // posle za engine
             {
+                CanPlayerMove = false;
                 FlipBoard.Orientation = Color.Black;
 
                 await GetEngineMoveAsync(string.Empty);
+            }
+            else
+            {
+                CanPlayerMove = true;
             }
         }
 
@@ -131,6 +137,8 @@ namespace DiplomskiRad.ViewModels
 
         private bool CanExecuteClickCommand(object parameter)
         {
+            if (!CanPlayerMove) return false;
+
             var selectedSquare = parameter as ChessSquare;
 
             if (selectedSquare.Piece != null)
@@ -347,20 +355,13 @@ namespace DiplomskiRad.ViewModels
             ChessSquares[SelectedSquare.Index].Piece = null;
             ChessSquares[SelectedSquare.Index].ImagePath = null;
 
-            return targetSquare.Piece.Name.Substring(0, 1);
+            return targetSquare.Piece is Knight ? "N" : targetSquare.Piece.Name.Substring(0, 1);
         }
 
         private void OrdinaryMove(ChessSquare targetSquare)
         {
-            ChessSquares[targetSquare.Index].Piece = SelectedSquare.Piece;
-            ChessSquares[targetSquare.Index].ImagePath = SelectedSquare.ImagePath;
-
-            if (ChessSquares[targetSquare.Index].Piece is Pawn) ((Pawn)(ChessSquares[targetSquare.Index].Piece)).IsFirstMove = false;
-            if (ChessSquares[targetSquare.Index].Piece is King) ((King)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
-            if (ChessSquares[targetSquare.Index].Piece is Rook) ((Rook)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
-
-            int start = targetSquare.Index;
-            int end = SelectedSquare.Index;
+            int start = SelectedSquare.Index;
+            int end = targetSquare.Index;
 
             if (ChessSquares[start].Piece is Pawn && Math.Abs(start - end) is (7 or 9) && ChessSquares[end].Piece is null) // en passant
             {
@@ -376,6 +377,13 @@ namespace DiplomskiRad.ViewModels
 
                 EnPassantPossibilty = false;
             }
+
+            ChessSquares[targetSquare.Index].Piece = SelectedSquare.Piece;
+            ChessSquares[targetSquare.Index].ImagePath = SelectedSquare.ImagePath;
+
+            if (ChessSquares[targetSquare.Index].Piece is Pawn) ((Pawn)(ChessSquares[targetSquare.Index].Piece)).IsFirstMove = false;
+            if (ChessSquares[targetSquare.Index].Piece is King) ((King)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
+            if (ChessSquares[targetSquare.Index].Piece is Rook) ((Rook)(ChessSquares[targetSquare.Index].Piece)).CastlingRight = false;
 
             ChessSquares[SelectedSquare.Index].Piece = null;
             ChessSquares[SelectedSquare.Index].ImagePath = null;
@@ -411,6 +419,8 @@ namespace DiplomskiRad.ViewModels
 
         private async Task GetEngineMoveAsync(string playerMove, bool promotion = false)
         {
+            CanPlayerMove = false;
+
             string engineMove;
 
             if (playerMove.Equals(string.Empty)) // prvi potez igra engine
@@ -428,6 +438,8 @@ namespace DiplomskiRad.ViewModels
             int end = Mapping.CoordinateToIndex[engineMove.Substring(2, 2)];
 
             HighlightSquares(start, end);
+
+            CanPlayerMove = true;
         }
 
         private void MakeEngineMove(string engineMove)
@@ -501,7 +513,10 @@ namespace DiplomskiRad.ViewModels
                 if (ChessSquares[end].Piece is King) ((King)ChessSquares[end].Piece).CastlingRight = false;
                 if (ChessSquares[end].Piece is Rook) ((Rook)ChessSquares[end].Piece).CastlingRight = false;
 
-                if (ChessSquares[end].Piece is Pawn && Math.Abs(end - start) == 2)
+                int rowStart = Mapping.IndexToDoubleIndex[start].Key;
+                int rowEnd = Mapping.IndexToDoubleIndex[end].Key;
+
+                if (ChessSquares[end].Piece is Pawn && Math.Abs(rowStart - rowEnd) == 2)
                 {
                     EnPassantPossibilty = true;
 

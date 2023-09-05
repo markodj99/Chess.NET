@@ -100,7 +100,7 @@ namespace DiplomskiRad.Engine
         {
             _position += move;
             SendCommand(_position);
-            var bestMove = GetMove("go movetime 1");
+            var bestMove = GetMove("go depth 1");
             _position += $"{bestMove} ";
 
             return bestMove;
