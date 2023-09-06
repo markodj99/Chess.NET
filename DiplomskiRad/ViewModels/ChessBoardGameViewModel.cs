@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace DiplomskiRad.ViewModels
@@ -218,6 +219,11 @@ namespace DiplomskiRad.ViewModels
             playerMove += promotion ? $"{promotionPiece} " : " ";
 
             await GetEngineMoveAsync(playerMove);
+
+            if (IsCheckMateOrStaleMate(PlayerColor) == GameStatus.CheckMate) MessageBox.Show("You've lost.");
+            if (IsCheckMateOrStaleMate(PlayerColor) == GameStatus.StaleMate) MessageBox.Show("Stale Mate.");
+
+            SelectedSquare = null;
         }
 
         #endregion
@@ -228,7 +234,7 @@ namespace DiplomskiRad.ViewModels
         {
             if (SelectedSquare?.Piece == null) return;
             var original = EnPassantPossibilty ? SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList(), EnPassantSquare) : SelectedSquare.Piece.GetPossibleMoves(SelectedSquare, ChessSquares.ToList());
-            var final = AreMovesValid(original);
+            var final = AreMovesValid(original, SelectedSquare);
             HighlightedSquares.AddRange(final);
             foreach (var t in HighlightedSquares)
             {
@@ -236,11 +242,11 @@ namespace DiplomskiRad.ViewModels
             }
         }
 
-        private List<int> AreMovesValid(List<int> possibleMoves)
+        private List<int> AreMovesValid(List<int> possibleMoves, ChessSquare selectedSquare)
         {
             var retVal = new List<int>(possibleMoves);
 
-            var initialPiecePosition = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(SelectedSquare.Row, SelectedSquare.Column)];
+            var initialPiecePosition = selectedSquare.Index;
             foreach (var move in possibleMoves)
             {
                 var boardCopy = new List<ChessSquare>(ChessSquares.Count);
@@ -256,28 +262,22 @@ namespace DiplomskiRad.ViewModels
                 int kingPos = 100;
                 foreach (var square in boardCopy)
                 {
-                    if (square.Piece != null)
+                    if (square.Piece == null) continue;
+                    if (square.Piece.Type == PieceType.King && square.Piece.Color == selectedSquare.Piece.Color)
                     {
-                        if (square.Piece.Type == PieceType.King && square.Piece.Color == SelectedSquare.Piece.Color)
-                        {
-                            kingPos = Mapping.DoubleIndexToIndex[new KeyValuePair<int, int>(square.Row, square.Column)];
-                            break;
-                        }
+                        kingPos = square.Index;
+                        break;
                     }
                 }
 
                 foreach (var square in boardCopy)
                 {
-                    if (square.Piece != null)
+                    if (square.Piece == null) continue;
+                    if (square.Piece.Color == selectedSquare.Piece.Color) continue;
+                    var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
+                    if (pieceMoves.Contains(kingPos))
                     {
-                        if (square.Piece.Color != selectedSquare.Piece.Color)
-                        {
-                            var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
-                            if (pieceMoves.Contains(kingPos))
-                            {
-                                retVal.Remove(move);
-                            }
-                        }
+                        retVal.Remove(move);
                     }
                 }
 
@@ -405,7 +405,6 @@ namespace DiplomskiRad.ViewModels
 
             LastMove.Add(start);
             LastMove.Add(end);
-            SelectedSquare = null;
 
             foreach (var move in LastMove)
             {
@@ -417,7 +416,7 @@ namespace DiplomskiRad.ViewModels
 
         #region Engine
 
-        private async Task GetEngineMoveAsync(string playerMove, bool promotion = false)
+        private async Task GetEngineMoveAsync(string playerMove)
         {
             CanPlayerMove = false;
 
@@ -430,6 +429,12 @@ namespace DiplomskiRad.ViewModels
             else // svi ostali potezi
             {
                 engineMove = await Task.Run(() => StockfishManager.GetBestMove(playerMove));
+            }
+
+            if (engineMove.Equals("(none)"))
+            {
+                MessageBox.Show(IsStockfishKingAttacked() ? "You've won." : "Stale mate.");
+                return;
             }
 
             MakeEngineMove(engineMove);
@@ -558,6 +563,49 @@ namespace DiplomskiRad.ViewModels
                 "b" => Path.Combine(targetFolder, $"Bishop_{color}.png"),
                 _ => Path.Combine(targetFolder, "King_W.png")
             };
+        }
+
+        #endregion
+
+        #region Game Status
+
+        private GameStatus IsCheckMateOrStaleMate(Color playerColor)
+        {
+            int kingPos = 100;
+            foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null && x.Piece.Color == playerColor))
+            {
+                if (chessSquare.Piece is King) kingPos = chessSquare.Index;
+                var original = EnPassantPossibilty ? chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList(), EnPassantSquare) : chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
+                var final = AreMovesValid(original, chessSquare);
+                if (final.Count > 0) return GameStatus.Continue;
+            }
+
+            foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null && x.Piece.Color != playerColor))
+            {
+                var original = chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList());
+                if(original.Contains(kingPos)) return GameStatus.CheckMate;
+            }
+
+            return GameStatus.StaleMate;
+        }
+
+        private bool IsStockfishKingAttacked()
+        {
+            int stockfishKingPos = 100;
+
+            foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null && x.Piece.Color != PlayerColor))
+            {
+                if (chessSquare.Piece is not King) continue;
+                stockfishKingPos = chessSquare.Index;
+                break;
+            }
+
+            foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null && x.Piece.Color == PlayerColor))
+            {
+                if (chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList()).Contains(stockfishKingPos)) return true;
+            }
+
+            return false;
         }
 
         #endregion

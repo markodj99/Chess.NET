@@ -34,7 +34,7 @@ namespace DiplomskiRad.Engine
             SendCommand("isready");
 
             SendCommand("setoption name UCI_LimitStrength value true");
-            SendCommand("setoption name Skill Level value 1");
+            SendCommand("setoption name Skill Level value -2");
         }
 
         //public string GetBestMove(string fenPosition, int depth = 10)
@@ -100,7 +100,7 @@ namespace DiplomskiRad.Engine
         {
             _position += move;
             SendCommand(_position);
-            var bestMove = GetMove("go depth 1");
+            var bestMove = GetMove("go movetime 1");
             _position += $"{bestMove} ";
 
             return bestMove;

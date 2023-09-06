@@ -8,7 +8,7 @@ namespace DiplomskiRad.Models.Pieces
 {
     public class Queen : Piece
     {
-        public Queen(Color color) : base("Queen", 8, color, PieceType.Pawn) { }
+        public Queen(Color color) : base("Queen", 8, color, PieceType.Queen) { }
 
         public override List<int> GetPossibleMoves(ChessSquare chessSquare, List<ChessSquare> board, int enPassantPosibleSquare = -1)
         {
