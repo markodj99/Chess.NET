@@ -270,7 +270,7 @@ namespace DiplomskiRad.ViewModels
                 {
                     if (square.Piece != null)
                     {
-                        if (square.Piece.Color != SelectedSquare.Piece.Color)
+                        if (square.Piece.Color != selectedSquare.Piece.Color)
                         {
                             var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
                             if (pieceMoves.Contains(kingPos))
