@@ -244,44 +244,73 @@ namespace DiplomskiRad.ViewModels
 
         private List<int> AreMovesValid(List<int> possibleMoves, ChessSquare selectedSquare)
         {
+            if (selectedSquare.Piece is King { CastlingRight: true }) return AreKingMovesValid(possibleMoves, selectedSquare);
+
             var retVal = new List<int>(possibleMoves);
 
             var initialPiecePosition = selectedSquare.Index;
             foreach (var move in possibleMoves)
             {
                 var boardCopy = new List<ChessSquare>(ChessSquares.Count);
-
-                foreach (var square in ChessSquares)
-                {
-                    boardCopy.Add(new ChessSquare(square));
-                }
-
+                foreach (var square in ChessSquares) boardCopy.Add(new ChessSquare(square));
+                
                 boardCopy[move].Piece = boardCopy[initialPiecePosition].Piece;
                 boardCopy[initialPiecePosition].Piece = null; // zamena pozicija
 
                 int kingPos = 100;
-                foreach (var square in boardCopy)
+                foreach (var square in boardCopy.Where(x => x.Piece != null && x.Piece.Color == selectedSquare.Piece.Color))
                 {
-                    if (square.Piece == null) continue;
-                    if (square.Piece.Type == PieceType.King && square.Piece.Color == selectedSquare.Piece.Color)
+                    if (square.Piece.Type == PieceType.King)
                     {
                         kingPos = square.Index;
                         break;
                     }
                 }
 
-                foreach (var square in boardCopy)
+                foreach (var square in boardCopy.Where(x => x.Piece != null && x.Piece.Color != selectedSquare.Piece.Color))
                 {
-                    if (square.Piece == null) continue;
-                    if (square.Piece.Color == selectedSquare.Piece.Color) continue;
                     var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
-                    if (pieceMoves.Contains(kingPos))
-                    {
-                        retVal.Remove(move);
-                    }
+                    if (pieceMoves.Contains(kingPos)) retVal.Remove(move);
                 }
 
                 boardCopy[initialPiecePosition].Piece = boardCopy[move].Piece;
+                boardCopy[move].Piece = null; // vracanje pozicija
+            }
+
+            return retVal;
+        }
+
+        private List<int> AreKingMovesValid(List<int> possibleMoves, ChessSquare selectedSquare)
+        {
+            var retVal = new List<int>(possibleMoves);
+
+            int initialKingPos = selectedSquare.Index;
+            foreach (var move in possibleMoves)
+            {
+                var boardCopy = new List<ChessSquare>(ChessSquares.Count);
+                foreach (var square in ChessSquares) boardCopy.Add(new ChessSquare(square));
+                
+                boardCopy[move].Piece = boardCopy[initialKingPos].Piece;
+                boardCopy[initialKingPos].Piece = null; // zamena pozicija
+
+                int newKingPos = boardCopy[move].Index;
+
+                foreach (var square in boardCopy.Where(x => x.Piece != null && x.Piece.Color != selectedSquare.Piece.Color))
+                {
+                    var pieceMoves = square.Piece.GetPossibleMoves(square, boardCopy);
+                    if (pieceMoves.Contains(newKingPos))
+                    {
+                        if (newKingPos == initialKingPos + 1) retVal.Remove(initialKingPos + 2);
+                        if (newKingPos == initialKingPos - 1) retVal.Remove(initialKingPos - 2);
+                        retVal.Remove(move);
+                    }
+
+                    if (!pieceMoves.Contains(initialKingPos)) continue;
+                    retVal.Remove(initialKingPos + 2);
+                    retVal.Remove(initialKingPos - 2);
+                }
+
+                boardCopy[initialKingPos].Piece = boardCopy[move].Piece;
                 boardCopy[move].Piece = null; // vracanje pozicija
             }
 
