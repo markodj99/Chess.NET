@@ -17,12 +17,13 @@ namespace DiplomskiRad.Engine
         {
             _position = "position startpos moves ";
             _engineStrength = engineStrength;
+            string chosenEngine = _engineStrength > 1250 ? "Stronger" : "Weaker";
 
             var currentDirectory = Directory.GetCurrentDirectory();
             var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Engine");
 
             _stockfishProcess = new Process();
-            _stockfishProcess.StartInfo.FileName = Path.Combine(targetFolder, StockfishSetting.Engine["Weaker"]);
+            _stockfishProcess.StartInfo.FileName = Path.Combine(targetFolder, StockfishSetting.Engine[chosenEngine]);
             _stockfishProcess.StartInfo.UseShellExecute = false;
             _stockfishProcess.StartInfo.RedirectStandardInput = true;
             _stockfishProcess.StartInfo.RedirectStandardOutput = true;
@@ -38,18 +39,6 @@ namespace DiplomskiRad.Engine
             SendCommand("setoption name UCI_LimitStrength value true");
             SendCommand(StockfishSetting.Setting[_engineStrength][0]);
         }
-
-        //public string GetBestMove(string fenPosition, int depth = 10)
-        //{
-        //    SendCommand($"position fen {fenPosition}");
-        //    SendCommand($"go depth {depth}");
-        //    string analysisResponse = ReadResponse();
-
-        //    // Parsiranje analize i izdvajanje najboljeg poteza
-        //    // Implementacija parsiranja zavisi od formata odgovora Stockfish-a
-
-        //    return "bestMove";
-        //}
 
         public string SendCommand(string command)
         {
