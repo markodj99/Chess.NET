@@ -4,19 +4,23 @@ namespace DiplomskiRad.Engine
 {
     public static class StockfishSetting
     {
+        public static Dictionary<string, string> Engine { get; set; } = new Dictionary<string, string>()
+        {
+            {"Weaker", "fairy_stockfish.exe"}, {"Stronger", "stockfish.exe"}
+        };
         public static Dictionary<int, List<string>> Setting { get; set; } = new Dictionary<int, List<string>>()
         {
             {250, new List<string>(3)
             {
-                "setoption name Skill Level value 0", "depth 1", "movetime 1"
+                "setoption name Skill Level value -20", "depth 1", "movetime 5"
             }},
-            {300, new List<string>()
+            {300, new List<string>(3)
             {
-                "setoption name Skill Level value -9", "depth 1", "movetime 50"
+                "setoption name Skill Level value -19", "depth 2", "movetime 5"
             }},
-            {350, new List<string>()
+            {350, new List<string>(3)
             {
-                "setoption name Skill Level value -9", "depth 1", "movetime 50"
+                "setoption name Skill Level value -18", "depth 1", "movetime 50"
             }},
             {400, new List<string>()
             {

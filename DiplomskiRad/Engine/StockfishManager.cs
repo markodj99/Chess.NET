@@ -22,7 +22,7 @@ namespace DiplomskiRad.Engine
             var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Engine");
 
             _stockfishProcess = new Process();
-            _stockfishProcess.StartInfo.FileName = Path.Combine(targetFolder, "stockfish.exe");
+            _stockfishProcess.StartInfo.FileName = Path.Combine(targetFolder, StockfishSetting.Engine["Weaker"]);
             _stockfishProcess.StartInfo.UseShellExecute = false;
             _stockfishProcess.StartInfo.RedirectStandardInput = true;
             _stockfishProcess.StartInfo.RedirectStandardOutput = true;
