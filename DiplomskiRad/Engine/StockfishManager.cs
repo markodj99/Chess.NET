@@ -11,10 +11,12 @@ namespace DiplomskiRad.Engine
         private readonly StreamReader _stockfishOutput;
 
         private string _position;
+        private readonly int _engineStrength;
 
         public  StockfishManager(int engineStrength)
         {
             _position = "position startpos moves ";
+            _engineStrength = engineStrength;
 
             var currentDirectory = Directory.GetCurrentDirectory();
             var targetFolder = Path.Combine(currentDirectory, "..", "..", "..", "Engine");
@@ -34,7 +36,7 @@ namespace DiplomskiRad.Engine
             SendCommand("isready");
 
             SendCommand("setoption name UCI_LimitStrength value true");
-            SendCommand("setoption name Skill Level value -2");
+            SendCommand(StockfishSetting.Setting[_engineStrength][0]);
         }
 
         //public string GetBestMove(string fenPosition, int depth = 10)
@@ -47,19 +49,6 @@ namespace DiplomskiRad.Engine
         //    // Implementacija parsiranja zavisi od formata odgovora Stockfish-a
 
         //    return "bestMove";
-        //}
-
-
-
-        //private void SendCommand(string command)
-        //{
-        //    _inputWriter.WriteLine(command);
-        //    _inputWriter.Flush();
-        //}
-
-        //private string ReadResponse()
-        //{
-        //    return _outputReader.ReadLine();
         //}
 
         public string SendCommand(string command)
@@ -100,7 +89,7 @@ namespace DiplomskiRad.Engine
         {
             _position += move;
             SendCommand(_position);
-            var bestMove = GetMove("go movetime 1");
+            var bestMove = GetMove($"go {StockfishSetting.Setting[_engineStrength][1]} {StockfishSetting.Setting[_engineStrength][2]}");
             _position += $"{bestMove} ";
 
             return bestMove;
@@ -111,9 +100,7 @@ namespace DiplomskiRad.Engine
             _stockfishInput.WriteLine(command);
             _stockfishInput.Flush();
 
-            string response = "";
             string line;
-
             while ((line = _stockfishOutput.ReadLine()) != null)
             {
                 if (line.StartsWith("bestmove")) return line.Split(' ')[1];
