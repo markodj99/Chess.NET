@@ -138,13 +138,13 @@ namespace DiplomskiRad.ViewModels
 
         private bool CanExecuteClickCommand(object parameter)
         {
-            //if (!CanPlayerMove) return false;
+            if (!CanPlayerMove) return false;
 
             var selectedSquare = parameter as ChessSquare;
 
             if (selectedSquare.Piece != null)
             {
-                //if (selectedSquare.Piece.Color != PlayerColor) return false;
+                if (selectedSquare.Piece.Color != PlayerColor) return false;
             }
 
             if (selectedSquare?.Piece == null) return false;
@@ -218,7 +218,7 @@ namespace DiplomskiRad.ViewModels
             string playerMove = a + b;
             playerMove += promotion ? $"{promotionPiece} " : " ";
 
-            //await GetEngineMoveAsync(playerMove);
+            await GetEngineMoveAsync(playerMove);
 
             GameStatus status = IsCheckMateOrStaleMate(PlayerColor);
             if (status == GameStatus.CheckMate) MessageBox.Show("You've lost.");
