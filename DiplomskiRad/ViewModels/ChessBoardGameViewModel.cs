@@ -138,13 +138,13 @@ namespace DiplomskiRad.ViewModels
 
         private bool CanExecuteClickCommand(object parameter)
         {
-            if (!CanPlayerMove) return false;
+            //if (!CanPlayerMove) return false;
 
             var selectedSquare = parameter as ChessSquare;
 
             if (selectedSquare.Piece != null)
             {
-                if (selectedSquare.Piece.Color != PlayerColor) return false;
+                //if (selectedSquare.Piece.Color != PlayerColor) return false;
             }
 
             if (selectedSquare?.Piece == null) return false;
@@ -218,10 +218,12 @@ namespace DiplomskiRad.ViewModels
             string playerMove = a + b;
             playerMove += promotion ? $"{promotionPiece} " : " ";
 
-            await GetEngineMoveAsync(playerMove);
+            //await GetEngineMoveAsync(playerMove);
 
-            if (IsCheckMateOrStaleMate(PlayerColor) == GameStatus.CheckMate) MessageBox.Show("You've lost.");
-            if (IsCheckMateOrStaleMate(PlayerColor) == GameStatus.StaleMate) MessageBox.Show("Stale Mate.");
+            GameStatus status = IsCheckMateOrStaleMate(PlayerColor);
+            if (status == GameStatus.CheckMate) MessageBox.Show("You've lost.");
+            if (status == GameStatus.StaleMate) MessageBox.Show("Stale Mate.");
+            if(IsDrawByInsufficientMaterial()) MessageBox.Show("Draw by insufficient material.");
 
             SelectedSquare = null;
         }
@@ -632,6 +634,97 @@ namespace DiplomskiRad.ViewModels
             foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null && x.Piece.Color == PlayerColor))
             {
                 if (chessSquare.Piece.GetPossibleMoves(chessSquare, ChessSquares.ToList()).Contains(stockfishKingPos)) return true;
+            }
+
+            return false;
+        }
+
+        private bool IsDrawByInsufficientMaterial()
+        {
+            var whitePieces = new List<PieceType>();
+            var blackPieces = new List<PieceType>();
+
+            foreach (var chessSquare in ChessSquares.Where(x => x.Piece != null))
+            {
+                var piece = chessSquare.Piece switch
+                {
+                    King => PieceType.King,
+                    Queen => PieceType.Queen,
+                    Rook => PieceType.Rook,
+                    Bishop => PieceType.Bishop,
+                    Knight => PieceType.Knight,
+                    Pawn => PieceType.Pawn,
+                    _ => PieceType.Pawn
+                };
+                if(chessSquare.Piece.Color == PlayerColor) whitePieces.Add(piece);
+                else blackPieces.Add(piece);
+            }
+
+            if (whitePieces.Count > 3 || blackPieces.Count > 3) return false;
+
+            if (whitePieces.Count == 1 && blackPieces.Count == 1) return true; // kralj vs kralj
+            if (KingBishopVsKing(whitePieces, blackPieces)) return true; // kralj lovac vs kralj
+            if (KingKnightVsKing(whitePieces, blackPieces)) return true; // kralj skakac vs kralj
+            if (MinorPieceDraw(whitePieces, blackPieces)) return true; // kralj skakac vs kralj lovac || kralj skakac vs kralj skakac || kralj lovac vs kralj lovac
+            if (KingTwoKnightsVsKing(whitePieces, blackPieces)) return true; // kralj skakac skakac vs kralj -> poseban slucaj u sahu
+
+            return false;
+        }
+
+        private bool KingBishopVsKing(List<PieceType> whitePieces, List<PieceType> blackPieces)
+        {
+            if (whitePieces.Count == 2 && blackPieces.Count == 1)
+            {
+                if (whitePieces[0] is (PieceType.King or PieceType.Bishop) && whitePieces[1] is (PieceType.King or PieceType.Bishop)) return true;
+            }
+
+            if (whitePieces.Count == 1 && blackPieces.Count == 2)
+            {
+                if (blackPieces[0] is (PieceType.King or PieceType.Bishop) && blackPieces[1] is (PieceType.King or PieceType.Bishop)) return true;
+            }
+
+            return false;
+        }
+
+        private bool KingKnightVsKing(List<PieceType> whitePieces, List<PieceType> blackPieces)
+        {
+            if (whitePieces.Count == 2 && blackPieces.Count == 1)
+            {
+                if (whitePieces[0] is (PieceType.King or PieceType.Knight) && whitePieces[1] is (PieceType.King or PieceType.Knight)) return true;
+            }
+
+            if (whitePieces.Count == 1 && blackPieces.Count == 2)
+            {
+                if (blackPieces[0] is (PieceType.King or PieceType.Knight) && blackPieces[1] is (PieceType.King or PieceType.Knight)) return true;
+            }
+
+            return false;
+        }
+
+        private bool MinorPieceDraw(List<PieceType> whitePieces, List<PieceType> blackPieces)
+        {
+            if (whitePieces.Count == 2 && blackPieces.Count == 2)
+            {
+                if ((whitePieces[0] is (PieceType.King or PieceType.Knight or PieceType.Bishop) && whitePieces[1] is (PieceType.King or PieceType.Knight or PieceType.Bishop))
+                    && (blackPieces[0] is (PieceType.King or PieceType.Knight or PieceType.Bishop) && blackPieces[1] is (PieceType.King or PieceType.Knight or PieceType.Bishop))) 
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool KingTwoKnightsVsKing(List<PieceType> whitePieces, List<PieceType> blackPieces)
+        {
+            if (whitePieces.Count == 3 && blackPieces.Count == 1)
+            {
+                if (whitePieces[0] is (PieceType.King or PieceType.Knight) && whitePieces[1] is (PieceType.King or PieceType.Knight)
+                                                                           && whitePieces[2] is (PieceType.King or PieceType.Knight)) return true;
+            }
+
+            if (whitePieces.Count == 1 && blackPieces.Count == 3)
+            {
+                if (blackPieces[0] is (PieceType.King or PieceType.Knight) && blackPieces[1] is (PieceType.King or PieceType.Knight)
+                                                                           && blackPieces[2] is (PieceType.King or PieceType.Knight)) return true;
             }
 
             return false;
