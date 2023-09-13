@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DiplomskiRad
+namespace DiplomskiRad.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

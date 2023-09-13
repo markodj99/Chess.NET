@@ -1,6 +1,7 @@
 ﻿using DiplomskiRad.Stores;
 using DiplomskiRad.ViewModels;
 using System.Windows;
+using DiplomskiRad.Views;
 
 namespace DiplomskiRad
 {
