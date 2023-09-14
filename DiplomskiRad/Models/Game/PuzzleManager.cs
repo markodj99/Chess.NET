@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,13 +10,67 @@ using DiplomskiRad.Models.Enums;
 
 namespace DiplomskiRad.Models.Game
 {
-    public class PuzzleManager
+    public class PuzzleManager : INotifyPropertyChanged
     {
         public List<ChessPuzzle> ChessPuzzles { get; set; }
         public int OrdinalNumber { get; set; }
         public int OrdinalMoveNumber { get; set; }
-        public int ErrorCount { get; set; }
-        public int Rating { get; set; }
+        private int _errorCount;
+        public int ErrorCount
+        {
+            get => _errorCount;
+            set
+            {
+                _errorCount = value;
+                if (ErrorCount == 1) FirstSquare = "Red";
+                if (ErrorCount == 2) SecondSquare = "Red";
+                if (ErrorCount == 3) ThirdSquare = "Red";
+            }
+        }
+        private int _rating;
+        public int Rating
+        {
+            get => _rating;
+            set
+            {
+                if (_rating == value) return;
+                _rating = value;
+                OnPropertyChanged(nameof(Rating));
+            }
+        }
+        private string _firstSquare;
+        public string FirstSquare
+        {
+            get => _firstSquare;
+            set
+            {
+                if (_firstSquare == value) return;
+                _firstSquare = value;
+                OnPropertyChanged(nameof(FirstSquare));
+            }
+        }
+        private string _secondSquare;
+        public string SecondSquare
+        {
+            get => _secondSquare;
+            set
+            {
+                if (_secondSquare == value) return;
+                _secondSquare = value;
+                OnPropertyChanged(nameof(SecondSquare));
+            }
+        }
+        private string _thirdSquare;
+        public string ThirdSquare
+        {
+            get => _thirdSquare;
+            set
+            {
+                if (_thirdSquare == value) return;
+                _thirdSquare = value;
+                OnPropertyChanged(nameof(ThirdSquare));
+            }
+        }
 
         public PuzzleManager() { }
 
@@ -25,6 +80,9 @@ namespace DiplomskiRad.Models.Game
             OrdinalMoveNumber = 0;
             ErrorCount = 0;
             Rating = 250;
+            FirstSquare = "Green";
+            SecondSquare = "Green";
+            ThirdSquare = "Green";
             ChessPuzzles = ParseFile();
         }
 
@@ -93,5 +151,10 @@ namespace DiplomskiRad.Models.Game
         public void IncrementOrdinalNumber() => OrdinalNumber++;
 
         public bool Condition() => OrdinalNumber is 51 or > 51;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
     }
 }

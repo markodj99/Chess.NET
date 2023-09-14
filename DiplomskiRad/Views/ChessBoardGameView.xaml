@@ -14,10 +14,16 @@
             <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="20*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid Background="CadetBlue" Grid.Row="1" Grid.Column="1">
+        <Grid Background="White" Grid.Row="0" Grid.Column="1">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                KASNIJE URADITI
+            </TextBlock>
+        </Grid>
+        <Grid Background="CadetBlue" Grid.Row="2" Grid.Column="1">
             <Grid.LayoutTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="{Binding FlipBoard.ScaleX}" ScaleY="{Binding FlipBoard.ScaleY}"/>
@@ -98,7 +104,7 @@
                 H
             </TextBlock>
         </Grid>
-        <Grid Background="CadetBlue" Grid.Row="0" Grid.Column="0">
+        <Grid Background="CadetBlue" Grid.Row="1" Grid.Column="0">
             <Grid.LayoutTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="{Binding FlipBoard.ScaleX}" ScaleY="{Binding FlipBoard.ScaleY}"/>
@@ -179,7 +185,7 @@
                 1
             </TextBlock>
         </Grid>
-        <ItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ChessSquares}">
+        <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ChessSquares}">
             <ItemsControl.LayoutTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="{Binding FlipBoard.ScaleX}" ScaleY="{Binding FlipBoard.ScaleY}"/>
