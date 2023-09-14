@@ -19,9 +19,14 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid Background="White" Grid.Row="0" Grid.Column="1">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 KASNIJE URADITI
             </TextBlock>
+            <Button Grid.Column="1" Content="New game"></Button>
         </Grid>
         <Grid Background="CadetBlue" Grid.Row="2" Grid.Column="1">
             <Grid.LayoutTransform>

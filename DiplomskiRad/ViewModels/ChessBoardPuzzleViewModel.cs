@@ -280,7 +280,7 @@ namespace DiplomskiRad.ViewModels
             {
                 if (++PuzzleManager.ErrorCount == 3)
                 {
-                    MessageBox.Show($"{PuzzleManager.Rating}");
+                    //MessageBox.Show($"{PuzzleManager.Rating}");
                     _engineStrengthEvaluated.EvaulatedRating(PuzzleManager.Rating);
                     return;
                 }
@@ -329,7 +329,7 @@ namespace DiplomskiRad.ViewModels
                 {
                     if (++PuzzleManager.ErrorCount == 3)
                     {
-                        MessageBox.Show($"{PuzzleManager.Rating}");
+                        //MessageBox.Show($"{PuzzleManager.Rating}");
                         _engineStrengthEvaluated.EvaulatedRating(PuzzleManager.Rating);
                         return;
                     }
