@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
         xmlns:views="clr-namespace:DiplomskiRad.Views"
+        Title="Chess.NET"
+        Icon="/Images/Icon.png"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel}"
         Height="800" Width="800">
