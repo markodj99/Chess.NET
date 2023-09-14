@@ -29,6 +29,7 @@ namespace DiplomskiRad.ViewModels
 
         public ICommand ClickCommand { get; private set; }
         public ICommand MoveCommand { get; private set; }
+        public ICommand NewGameCommand { get; private set; }
 
         private List<int> HighlightedSquares { get; set; }
         public List<int> LastMove { get; set; }
@@ -58,6 +59,7 @@ namespace DiplomskiRad.ViewModels
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
+            NewGameCommand = new Command(ExecuteNewGameCommand, CanExecuteNewGameCommand);
         }
 
         public async Task Start()
@@ -135,6 +137,13 @@ namespace DiplomskiRad.ViewModels
         #endregion
 
         #region Commands
+
+        private bool CanExecuteNewGameCommand(object parameter) => CanPlayerMove;
+
+        private void ExecuteNewGameCommand(object parameter)
+        {
+
+        }
 
         private bool CanExecuteClickCommand(object parameter)
         {
@@ -223,7 +232,7 @@ namespace DiplomskiRad.ViewModels
             GameStatus status = IsCheckMateOrStaleMate(PlayerColor);
             if (status == GameStatus.CheckMate) MessageBox.Show("You've lost.");
             if (status == GameStatus.StaleMate) MessageBox.Show("Stale Mate.");
-            if(IsDrawByInsufficientMaterial()) MessageBox.Show("Draw by insufficient material.");
+            if (IsDrawByInsufficientMaterial()) MessageBox.Show("Draw by insufficient material.");
 
             SelectedSquare = null;
         }

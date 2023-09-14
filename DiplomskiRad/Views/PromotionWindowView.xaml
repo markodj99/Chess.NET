@@ -6,8 +6,8 @@
         xmlns:viewModels="clr-namespace:DiplomskiRad.ViewModels"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:PromotionWindowViewModel}"
-        Title="PromotionWindowView" Height="200" Width="300">
-    <Grid>
+        Icon="/Images/Icon.png" Height="200" Width="300">
+    <Grid Background="#423936">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image Source="{Binding ImagePathQueen}" Width="50" Height="50" Margin="10">
                 <Image.InputBindings>

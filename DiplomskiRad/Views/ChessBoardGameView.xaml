@@ -26,7 +26,7 @@
             <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 KASNIJE URADITI
             </TextBlock>
-            <Button Grid.Column="1" Content="New game"></Button>
+            <Button Grid.Column="1" Content="New game" Command="{Binding NewGameCommand}"></Button>
         </Grid>
         <Grid Background="CadetBlue" Grid.Row="2" Grid.Column="1">
             <Grid.LayoutTransform>
