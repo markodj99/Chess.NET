@@ -14,16 +14,17 @@ namespace DiplomskiRad
         {
             var colorSelectionStore = new ColorSelectionStore();
             var engineStrengthStore = new EngineStrengthStore();
-            var engineStrengthEvaluated = new EngineStrengthEvaluated();
+            var engineStrengthEvaluatedStore = new EngineStrengthEvaluatedStore();
+            var newGameStore = new NewGameStore();
 
             var colorSelectionViewModel = new ColorSelectionViewModel(colorSelectionStore);
             var engineStrengthViewModel = new EngineStrengthViewModel(engineStrengthStore);
-            var chessBoardPuzzleViewModel = new ChessBoardPuzzleViewModel(engineStrengthEvaluated);
-            var chessBoardGameViewModel = new ChessBoardGameViewModel();
+            var chessBoardPuzzleViewModel = new ChessBoardPuzzleViewModel(engineStrengthEvaluatedStore);
+            var chessBoardGameViewModel = new ChessBoardGameViewModel(newGameStore);
 
             var mainViewModel = 
-                new MainWindowViewModel(colorSelectionViewModel, engineStrengthViewModel, chessBoardPuzzleViewModel, chessBoardGameViewModel,
-                    colorSelectionStore, engineStrengthStore, engineStrengthEvaluated);
+                new MainWindowViewModel(colorSelectionViewModel, engineStrengthViewModel, chessBoardPuzzleViewModel, 
+                    chessBoardGameViewModel, colorSelectionStore, engineStrengthStore, engineStrengthEvaluatedStore, newGameStore);
 
             MainWindow = new MainWindow()
             {

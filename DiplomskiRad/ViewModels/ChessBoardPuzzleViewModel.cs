@@ -17,7 +17,7 @@ namespace DiplomskiRad.ViewModels
     {
         #region Fields
 
-        private readonly EngineStrengthEvaluated _engineStrengthEvaluated;
+        private readonly EngineStrengthEvaluatedStore _engineStrengthEvaluated;
         public FlipBoard FlipBoard { get; set; }
         public ObservableCollection<ChessSquare> ChessSquares { get; set; }
 
@@ -43,7 +43,7 @@ namespace DiplomskiRad.ViewModels
 
         #region Initialization
 
-        public ChessBoardPuzzleViewModel(EngineStrengthEvaluated engineStrengthEvaluated)
+        public ChessBoardPuzzleViewModel(EngineStrengthEvaluatedStore engineStrengthEvaluated)
         {
             FlipBoard = new FlipBoard();
             ChessSquares = SetUpBoard();

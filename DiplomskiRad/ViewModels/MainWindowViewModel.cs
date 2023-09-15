@@ -19,15 +19,18 @@ namespace DiplomskiRad.ViewModels
 
         private readonly ColorSelectionStore _colorSelectionStore;
         private readonly EngineStrengthStore _engineStrengthStore;
-        private readonly EngineStrengthEvaluated _engineStrengthEvaluatedStore;
+        private readonly EngineStrengthEvaluatedStore _engineStrengthEvaluatedStore;
+        private readonly NewGameStore _newGameStore;
 
         public MainWindowViewModel(ColorSelectionViewModel colorSelectionViewModel, EngineStrengthViewModel engineStrengthViewModel,
             ChessBoardPuzzleViewModel chessBoardPuzzleViewModel, ChessBoardGameViewModel chessBoardGameViewModel,
-            ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore, EngineStrengthEvaluated engineStrengthEvaluatedStore)
+            ColorSelectionStore colorSelectionStore, EngineStrengthStore engineStrengthStore, 
+            EngineStrengthEvaluatedStore engineStrengthEvaluatedStore, NewGameStore newGameStore)
         {
             _colorSelectionStore = colorSelectionStore;
             _engineStrengthStore = engineStrengthStore;
             _engineStrengthEvaluatedStore = engineStrengthEvaluatedStore;
+            _newGameStore = newGameStore;
 
             _colorSelectionViewModel = colorSelectionViewModel;
             _engineStrengthViewModel = engineStrengthViewModel;

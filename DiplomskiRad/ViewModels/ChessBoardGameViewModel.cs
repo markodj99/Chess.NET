@@ -4,6 +4,7 @@ using DiplomskiRad.Helper;
 using DiplomskiRad.Models.Enums;
 using DiplomskiRad.Models.Game;
 using DiplomskiRad.Models.Pieces;
+using DiplomskiRad.Stores;
 using DiplomskiRad.Views;
 using System;
 using System.Collections.Generic;
@@ -48,18 +49,21 @@ namespace DiplomskiRad.ViewModels
         public bool EnPassantPossibilty { get; set; }
         public int EnPassantSquare { get; set; }
         public bool CanPlayerMove { get; set; }
+        private readonly NewGameStore _newGameStore;
 
         #endregion
 
         #region Initialization
 
-        public ChessBoardGameViewModel()
+        public ChessBoardGameViewModel(NewGameStore newGameStore)
         {
             FlipBoard = new FlipBoard();
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
             NewGameCommand = new Command(ExecuteNewGameCommand, CanExecuteNewGameCommand);
+
+            _newGameStore = newGameStore;
         }
 
         public async Task Start()

@@ -71,6 +71,7 @@
                 VerticalAlignment="Stretch"
                 Margin="5"
                 Command="{Binding PuzzleCommand}">
+            <materialDesign:PackIcon Kind="Puzzle" Height="40" Width="40"/>
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="White"/>
