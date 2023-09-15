@@ -183,7 +183,7 @@ namespace DiplomskiRad.ViewModels
         {
             if (PuzzleManager.Condition())
             {
-                MessageBox.Show($"{PuzzleManager.Rating}");
+                //MessageBox.Show($"{PuzzleManager.Rating}");
                 _engineStrengthEvaluated.EvaulatedRating(PuzzleManager.Rating);
                 return;
             }
