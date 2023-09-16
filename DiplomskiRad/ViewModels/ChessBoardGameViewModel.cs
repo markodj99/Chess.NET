@@ -24,7 +24,7 @@ namespace DiplomskiRad.ViewModels
         public Color PlayerColor { get; set; }
         public int EngineStrength { get; set; }
         public FlipBoard FlipBoard { get; set; }
-        
+
         public ObservableCollection<ChessSquare> ChessSquares { get; set; }
         public StockfishManager StockfishManager { get; set; }
 
@@ -36,6 +36,7 @@ namespace DiplomskiRad.ViewModels
         public List<int> LastMove { get; set; }
 
         private ChessSquare? _selectedSquare;
+
         public ChessSquare? SelectedSquare
         {
             get => _selectedSquare;
@@ -50,6 +51,7 @@ namespace DiplomskiRad.ViewModels
         public int EnPassantSquare { get; set; }
         public bool CanPlayerMove { get; set; }
         private readonly NewGameStore _newGameStore;
+        public GameStatusDisplay GameStatusDisplay { get; set; }
 
         #endregion
 
@@ -61,7 +63,7 @@ namespace DiplomskiRad.ViewModels
 
             ClickCommand = new Command(ExecuteClickCommand, CanExecuteClickCommand);
             MoveCommand = new Command(ExecuteMoveCommand, CanExecuteMoveCommand);
-            NewGameCommand = new Command(ExecuteNewGameCommand, CanExecuteNewGameCommand);
+            NewGameCommand = new Command(ExecuteNewGameCommand, (o) => true);
 
             _newGameStore = newGameStore;
         }
@@ -82,6 +84,8 @@ namespace DiplomskiRad.ViewModels
 
             if (PlayerColor == Color.Black) // posle za engine
             {
+                GameStatusDisplay = new GameStatusDisplay("Red", "Status: Stockfish is thinking.");
+
                 CanPlayerMove = false;
                 FlipBoard.Orientation = Color.Black;
 
@@ -89,6 +93,8 @@ namespace DiplomskiRad.ViewModels
             }
             else
             {
+                GameStatusDisplay = new GameStatusDisplay("Green", "Status: It's your turn to make a move.");
+                FlipBoard.Orientation = Color.White;
                 CanPlayerMove = true;
             }
         }
@@ -142,11 +148,11 @@ namespace DiplomskiRad.ViewModels
 
         #region Commands
 
-        private bool CanExecuteNewGameCommand(object parameter) => CanPlayerMove;
-
         private void ExecuteNewGameCommand(object parameter)
         {
-
+            StockfishManager.SendCommand("quit");
+            ChessSquares = null;
+            _newGameStore.NewGameClick();
         }
 
         private bool CanExecuteClickCommand(object parameter)
@@ -173,8 +179,7 @@ namespace DiplomskiRad.ViewModels
                 SelectedSquare = new ChessSquare(selectedSquare);
                 int index = SelectedSquare.Index;
                 HighlightedSquares.Add(index);
-                ChessSquares[index].Color = "Black"; // boje
-                //ChessSquares.First(x => x is { Row: 2, Column: 0 }).ImagePath = ChessSquares.First(x => x is { Row: 0, Column: 0 }).ImagePath; test samo
+                ChessSquares[index].Color = "#0b8e0d"; // boje
             }
             else if (SelectedSquare.Equals(selectedSquare)) // ista izabrana 2 puta
             {
@@ -223,20 +228,38 @@ namespace DiplomskiRad.ViewModels
             }
 
             EnPassantPossibilty = false;
-
             HighlightSquares(start, end);
+            GameStatusDisplay.Color = "Red";
+            GameStatusDisplay.Message = "Status: Stockfish is thinking.";
 
             string a = Mapping.IndexToCoordinate[LastMove[0]];
             string b = Mapping.IndexToCoordinate[LastMove[1]];
             string playerMove = a + b;
             playerMove += promotion ? $"{promotionPiece} " : " ";
 
+            if (ChessSquares == null) return; // korisnik kliknuo new game
             await GetEngineMoveAsync(playerMove);
+            if (ChessSquares == null) return; // korisnik kliknuo new game
 
             GameStatus status = IsCheckMateOrStaleMate(PlayerColor);
-            if (status == GameStatus.CheckMate) MessageBox.Show("You've lost.");
-            if (status == GameStatus.StaleMate) MessageBox.Show("Stale Mate.");
-            if (IsDrawByInsufficientMaterial()) MessageBox.Show("Draw by insufficient material.");
+            if (status == GameStatus.CheckMate)
+            {
+                GameStatusDisplay.Color = "Red";
+                GameStatusDisplay.Message = "Status: You've lost.";
+                CanPlayerMove = false;
+            }
+            if (status == GameStatus.StaleMate)
+            {
+                GameStatusDisplay.Color = "Yellow";
+                GameStatusDisplay.Message = "Status: Stale Mate.";
+                CanPlayerMove = false;
+            }
+            if (IsDrawByInsufficientMaterial())
+            {
+                GameStatusDisplay.Color = "Yellow";
+                GameStatusDisplay.Message = "Status: Draw by insufficient material.";
+                CanPlayerMove = false;
+            }
 
             SelectedSquare = null;
         }
@@ -253,7 +276,7 @@ namespace DiplomskiRad.ViewModels
             HighlightedSquares.AddRange(final);
             foreach (var t in HighlightedSquares)
             {
-                ChessSquares[t].Color = "Black";
+                ChessSquares[t].Color = "#964B00";
             }
         }
 
@@ -465,6 +488,7 @@ namespace DiplomskiRad.ViewModels
             CanPlayerMove = false;
 
             string engineMove;
+            if (ChessSquares == null) return; // korisnik kliknuo new game
 
             if (playerMove.Equals(string.Empty)) // prvi potez igra engine
             {
@@ -475,9 +499,20 @@ namespace DiplomskiRad.ViewModels
                 engineMove = await Task.Run(() => StockfishManager.GetBestMove(playerMove));
             }
 
+            if (ChessSquares == null) return; // korisnik kliknuo new game
             if (engineMove.Equals("(none)"))
             {
-                MessageBox.Show(IsStockfishKingAttacked() ? "You've won." : "Stale mate.");
+                if (IsStockfishKingAttacked())
+                {
+                    GameStatusDisplay.Color = "Green";
+                    GameStatusDisplay.Message = "Status: You've won by checkmate.";
+                }
+                else
+                {
+                    GameStatusDisplay.Color = "Yellow";
+                    GameStatusDisplay.Message = "Status: Stale mate.";
+                }
+
                 return;
             }
 
@@ -489,6 +524,8 @@ namespace DiplomskiRad.ViewModels
             HighlightSquares(start, end);
 
             CanPlayerMove = true;
+            GameStatusDisplay.Color = "Green";
+            GameStatusDisplay.Message = "Status: It's your turn to make a move.";
         }
 
         private void MakeEngineMove(string engineMove)

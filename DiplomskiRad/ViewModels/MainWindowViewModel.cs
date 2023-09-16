@@ -10,7 +10,6 @@ namespace DiplomskiRad.ViewModels
         {
             get => _currentViewModel;
             set  => SetProperty(ref _currentViewModel, value);
-
         }
         private ColorSelectionViewModel _colorSelectionViewModel;
         private EngineStrengthViewModel _engineStrengthViewModel;
@@ -40,6 +39,7 @@ namespace DiplomskiRad.ViewModels
             _colorSelectionStore.ColorSelected += ColorSelected;
             _engineStrengthStore.StrengthSelected += StrengthSelected;
             _engineStrengthEvaluatedStore.RatingEvaluated += StrengthEvaluated;
+            _newGameStore.NewGameClicked += ClickedNewGame;
 
             CurrentViewModel = _colorSelectionViewModel;
         }
@@ -72,11 +72,14 @@ namespace DiplomskiRad.ViewModels
             CurrentViewModel = _chessBoardGameViewModel;
         }
 
+        private void ClickedNewGame() => CurrentViewModel = _colorSelectionViewModel;
+
         public override void Dispose()
         {
             _colorSelectionStore.ColorSelected -= ColorSelected;
             _engineStrengthStore.StrengthSelected -= StrengthSelected;
             _engineStrengthEvaluatedStore.RatingEvaluated -= StrengthEvaluated;
+            _newGameStore.NewGameClicked -= ClickedNewGame;
         }
     }
 }

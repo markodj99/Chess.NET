@@ -110,8 +110,7 @@ namespace DiplomskiRad.ViewModels
                 SelectedSquare = new ChessSquare(selectedSquare);
                 int index = SelectedSquare.Index;
                 HighlightedSquares.Add(index);
-                ChessSquares[index].Color = "Black";
-                //ChessSquares.First(x => x is { Row: 2, Column: 0 }).ImagePath = ChessSquares.First(x => x is { Row: 0, Column: 0 }).ImagePath; test samo
+                ChessSquares[index].Color = "#0b8e0d";
             }
             else if (SelectedSquare.Equals(selectedSquare)) // ista izabrana 2 puta
             {
@@ -370,7 +369,7 @@ namespace DiplomskiRad.ViewModels
             HighlightedSquares.AddRange(final);
             foreach (var t in HighlightedSquares)
             {
-                ChessSquares[t].Color = "Black";
+                ChessSquares[t].Color = "#964B00";
             }
         }
 

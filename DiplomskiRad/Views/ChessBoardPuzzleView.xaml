@@ -18,16 +18,16 @@
             <RowDefinition Height="20*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid Background="Yellow" Grid.Row="0" Grid.Column="1">
+        <Grid Background="CornflowerBlue" Grid.Row="0" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Rectangle Grid.Column="0" Fill="{Binding PuzzleManager.FirstSquare}"/>
-            <Rectangle Grid.Column="1" Fill="{Binding PuzzleManager.SecondSquare}"/>
-            <Rectangle Grid.Column="2" Fill="{Binding PuzzleManager.ThirdSquare}"/>
+            <Rectangle StrokeThickness="1" Stroke="Black" Grid.Column="0" Fill="{Binding PuzzleManager.FirstSquare}"/>
+            <Rectangle StrokeThickness="1" Stroke="Black" Grid.Column="1" Fill="{Binding PuzzleManager.SecondSquare}"/>
+            <Rectangle StrokeThickness="1" Stroke="Black" Grid.Column="2" Fill="{Binding PuzzleManager.ThirdSquare}"/>
             <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding PuzzleManager.Rating}"/>
         </Grid>
         <Grid Background="CadetBlue" Grid.Row="2" Grid.Column="1">
