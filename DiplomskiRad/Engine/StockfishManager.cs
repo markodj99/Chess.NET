@@ -4,7 +4,7 @@ using System.IO;
 
 namespace DiplomskiRad.Engine
 {
-    public class StockfishManager/* : IDisposable*/
+    public class StockfishManager
     {
         private readonly Process _stockfishProcess;
         private readonly StreamWriter _stockfishInput;
@@ -97,18 +97,6 @@ namespace DiplomskiRad.Engine
 
             return "";
         }
-
-        //public void Dispose()
-        //{
-        //    if (_stockfishProcess != null && !_stockfishProcess.HasExited)
-        //    {
-        //        SendCommand("quit");
-        //        _stockfishProcess.WaitForExit();
-        //        _stockfishProcess.Close();
-        //    }
-        //    _stockfishInput.Close();
-        //    _stockfishOutput.Close();
-        //}
 
         public void Close()
         {

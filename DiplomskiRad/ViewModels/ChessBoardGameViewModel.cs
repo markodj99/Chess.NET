@@ -150,7 +150,8 @@ namespace DiplomskiRad.ViewModels
 
         private void ExecuteNewGameCommand(object parameter)
         {
-            StockfishManager.SendCommand("quit");
+            //StockfishManager.SendCommand("quit");
+            StockfishManager.Close();
             ChessSquares = null;
             _newGameStore.NewGameClick();
         }
