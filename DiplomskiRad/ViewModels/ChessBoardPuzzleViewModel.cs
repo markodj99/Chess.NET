@@ -74,6 +74,12 @@ namespace DiplomskiRad.ViewModels
 
         public void Start()
         {
+            foreach (var chessSquare in ChessSquares)
+            {
+                chessSquare.Piece = null;
+                chessSquare.ImagePath = null;
+            }
+
             PuzzleManager = new PuzzleManager();
             PuzzleManager.Initialize();
 
